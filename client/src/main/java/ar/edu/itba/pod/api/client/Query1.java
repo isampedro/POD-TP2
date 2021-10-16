@@ -15,8 +15,6 @@ public class Query1 {
 
     public static void main(String[] args) {
 
-        //logger.info("Query client starting...");
-
         try {
             address = System.getProperty(ClientArgsNames.SERVER_ADDRESS.getArgumentName());
             inPath = System.getProperty(ClientArgsNames.CSV_OUTPATH.getArgumentName());
