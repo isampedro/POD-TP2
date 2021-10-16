@@ -1,14 +1,14 @@
 package ar.edu.itba.pod.api.client;
 
 public enum ClientArgsNames {
-        SERVER_ADDRESS ("serverAddress"),
-        ACTION_NAME ("action"),
-        CATEGORY_NAME ("category"),
-        LANE_NAME ("runway"),
-        AIRLINE ("airline"),
-        FLIGHT_ID ("flightCode"),
+        ADDRESS ("addresses"),
+        CITY ("city"),
+        NEIGHBOURHOOD ( "neighbourhood"),
+        COMMON_NAME ("commonName"),
+        N ("n"),
         CSV_INPATH ("inPath"),
         CSV_OUTPATH ("outPath");
+
 
         String argumentName;
 
@@ -19,4 +19,6 @@ public enum ClientArgsNames {
         public String getArgumentName() {
             return argumentName;
         }
+
+
 }
