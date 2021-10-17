@@ -1,17 +1,14 @@
 package ar.edu.itba.pod.api.client;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+import com.hazelcast.core.HazelcastInstance;
 import java.util.HashMap;
-import java.util.List;
 
 public abstract class BasicQuery {
 
     private final static HashMap<ClientArgsNames, String> arguments = new HashMap<>();
 
     public static void parseArguments(){
-        arguments.put(ClientArgsNames.ADDRESS,System.getProperty(ClientArgsNames.ADDRESS.getArgumentName()));
+        arguments.put(ClientArgsNames.ADDRESSES,System.getProperty(ClientArgsNames.ADDRESSES.getArgumentName()));
         arguments.put(ClientArgsNames.CSV_OUTPATH,System.getProperty(ClientArgsNames.CSV_OUTPATH.getArgumentName()));
         arguments.put(ClientArgsNames.CSV_INPATH,System.getProperty(ClientArgsNames.CSV_INPATH.getArgumentName()));
         arguments.put(ClientArgsNames.CITY,System.getProperty(ClientArgsNames.CITY.getArgumentName()));
@@ -21,23 +18,20 @@ public abstract class BasicQuery {
 
     }
 
-    public static void writeToCSV(String outPath, List<String> results, String headers){
-        results.add(0, headers);
-        try(BufferedWriter bw = new BufferedWriter(new FileWriter(outPath))) {
-            for (String result : results) {
-                bw.write(result);
-                bw.newLine();
-            }
-        } catch (IOException e) {
-            //logger.error("IOException {} ",e.getMessage());
-        }
-    }
-
     public static String getArguments(ClientArgsNames name) {
         return arguments.get(name);
     }
+
     public static boolean commonArgsNull(){
-        return (getArguments(ClientArgsNames.CSV_OUTPATH) == null || getArguments(ClientArgsNames.CSV_INPATH) == null ||getArguments(ClientArgsNames.CITY) == null || getArguments(ClientArgsNames.CSV_OUTPATH) == null);
+        return (getArguments(ClientArgsNames.CSV_OUTPATH) == null
+                || getArguments(ClientArgsNames.CSV_INPATH) == null
+                || getArguments(ClientArgsNames.CITY) == null
+                || getArguments(ClientArgsNames.CSV_OUTPATH) == null);
+    }
+
+    public static HazelcastInstance getHazelcastInstance() {
+        QueryData data = CsvManager.readCsvData(getArguments(ClientArgsNames.CSV_INPATH), getArguments(ClientArgsNames.CITY));
+        return HazelcastManager.instanceClient(getArguments(ClientArgsNames.ADDRESSES), data);
     }
 
 }

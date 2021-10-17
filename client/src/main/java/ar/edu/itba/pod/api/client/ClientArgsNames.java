@@ -1,7 +1,7 @@
 package ar.edu.itba.pod.api.client;
 
 public enum ClientArgsNames {
-        ADDRESS ("addresses"),
+        ADDRESSES ("addresses"),
         CITY ("city"),
         NEIGHBOURHOOD ( "neighbourhood"),
         COMMON_NAME ("commonName"),
