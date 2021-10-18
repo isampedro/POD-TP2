@@ -50,7 +50,8 @@ public class CsvManager {
                             neighborhoods
                                     .stream()
                                     .filter(n -> n.getName().equals(neighborhoodName))
-                                    .findAny().orElseThrow(IllegalArgumentException::new), lineArgs[0]));
+                                    .findAny()
+                                    .orElse(new Neighborhood(neighborhoodName, 0)), lineArgs[0]));
                 }
             }
 
