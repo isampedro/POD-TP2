@@ -42,13 +42,13 @@ public class Query1 extends BasicQuery{
                 .submit();
 
         Map<String, Long> rawResult = future.get();
-        List<String> outLines = postProcess(rawResult, client);
+        List<String> outLines = postProcess(rawResult);
 
         String headers = "neighbourhood;trees";
         CsvManager.writeToCSV(getArguments(ClientArgsNames.CSV_OUTPATH), outLines, headers);
     }
 
-    private static List<String> postProcess(Map<String, Long> rawResult, HazelcastInstance client) {
+    private static List<String> postProcess(Map<String, Long> rawResult) {
         //IList<Neighborhood> neighborhoods = client.getList(HazelcastManager.getNeighborhoodNamespace());
         //final List<String> neighborhoodsNames = neighborhoods.stream()
         //        .map(Neighborhood::getName).collect(Collectors.toList());
