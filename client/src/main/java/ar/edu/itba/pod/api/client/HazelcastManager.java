@@ -15,7 +15,7 @@ public class HazelcastManager {
 
     public static HazelcastInstance instanceClient(String addresses, QueryData queryData) {
         final ClientConfig ccfg = new ClientConfig();
-        ccfg.getGroupConfig().setName().setPassword();
+        ccfg.getGroupConfig().setName("g14-cluster").setPassword("fruta");
         final String[] splitedAddresses = addresses.split(";");
         final ClientNetworkConfig net = new ClientNetworkConfig();
         net.addAddress(splitedAddresses);
@@ -27,7 +27,6 @@ public class HazelcastManager {
         trees.addAll(queryData.getTrees());
         IList<Neighborhood> neighborhoods = client.getList(NEIGHBORHOOD_NAMESPACE);
         neighborhoods.addAll(queryData.getNeighborhoods());
-
         return client;
     }
 

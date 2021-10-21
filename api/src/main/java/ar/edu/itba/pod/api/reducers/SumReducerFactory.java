@@ -3,14 +3,14 @@ package ar.edu.itba.pod.api.reducers;
 import com.hazelcast.mapreduce.Reducer;
 import com.hazelcast.mapreduce.ReducerFactory;
 
-public class Query1ReducerFactory implements ReducerFactory<String, Long, Long> {
+public class SumReducerFactory implements ReducerFactory<String, Long, Long> {
 
     @Override
     public Reducer<Long, Long> newReducer(String s) {
-        return new Query1Reducer();
+        return new SumReducer();
     }
 
-    private class Query1Reducer extends Reducer<Long, Long> {
+    private class SumReducer extends Reducer<Long, Long> {
         private long sum;
 
         @Override

@@ -1,5 +1,7 @@
 package ar.edu.itba.pod.api;
 
+import java.util.Objects;
+
 public class Tree {
     private final String name;
     private final Neighborhood neighborhood;
@@ -21,5 +23,18 @@ public class Tree {
 
     public String getStreet() {
         return street;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Tree tree = (Tree) o;
+        return name.equals(tree.name) && neighborhood.equals(tree.neighborhood) && street.equals(tree.street);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, neighborhood, street);
     }
 }

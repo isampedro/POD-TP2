@@ -1,10 +1,9 @@
 package ar.edu.itba.pod.api.client;
 
-import ar.edu.itba.pod.api.Neighborhood;
 import ar.edu.itba.pod.api.Tree;
 import ar.edu.itba.pod.api.combiners.Query1CombinerFactory;
 import ar.edu.itba.pod.api.mappers.Query1Mapper;
-import ar.edu.itba.pod.api.reducers.Query1ReducerFactory;
+import ar.edu.itba.pod.api.reducers.SumReducerFactory;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.ICompletableFuture;
 import com.hazelcast.core.IList;
@@ -39,7 +38,7 @@ public class Query1 extends BasicQuery{
         ICompletableFuture<Map<String, Long>> future = job
                 .mapper(new Query1Mapper())
                 .combiner(new Query1CombinerFactory())
-                .reducer(new Query1ReducerFactory())
+                .reducer(new SumReducerFactory())
                 .submit();
 
         Map<String, Long> rawResult = future.get();
