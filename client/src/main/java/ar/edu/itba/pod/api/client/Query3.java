@@ -1,6 +1,7 @@
 package ar.edu.itba.pod.api.client;
 
 import ar.edu.itba.pod.api.Tree;
+import ar.edu.itba.pod.api.combiners.Query3CombinerFactory;
 import ar.edu.itba.pod.api.mappers.Query3Mapper;
 import ar.edu.itba.pod.api.reducers.Query3ReducerFactory;
 import com.hazelcast.core.HazelcastInstance;
@@ -40,6 +41,7 @@ public class Query3 extends BasicQuery{
     final Job<String, Tree> job = tracker.newJob(sourceTrees);
     final ICompletableFuture<Map<String, Integer>> future = job
             .mapper(new Query3Mapper())
+            .combiner(new Query3CombinerFactory())
             .reducer(new Query3ReducerFactory())
             .submit();
 
@@ -50,6 +52,7 @@ public class Query3 extends BasicQuery{
 
     }
 
+    // TODO: que de todo esto se puede pasar a un collator
     private static List<String> postProcess(Map<String, Integer> rawResult, int n) {
         List<Map.Entry<String, Integer>> result = rawResult.entrySet().stream()
                 .sorted(Comparator.comparing((Function<Map.Entry<String, Integer>, Integer>) Map.Entry::getValue)
@@ -60,7 +63,7 @@ public class Query3 extends BasicQuery{
                 .collect(Collectors.toList());
     }
 
-        private static IList<Tree> preProcessTrees(IList<Tree> trees) {
+    private static IList<Tree> preProcessTrees(IList<Tree> trees) {
         // que solo lleguen aquellos arboles que tienen barrio listado en barrios a los mapper
         trees.forEach(tree -> {
             if(tree.getNeighborhood().getPopulation() == 0)
