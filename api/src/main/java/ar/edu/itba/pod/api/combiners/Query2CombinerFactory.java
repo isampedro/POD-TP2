@@ -4,7 +4,7 @@ import ar.edu.itba.pod.api.Neighborhood;
 import ar.edu.itba.pod.api.Tree;
 import com.hazelcast.mapreduce.Combiner;
 import com.hazelcast.mapreduce.CombinerFactory;
-import com.sun.tools.javac.util.Pair;
+import ar.edu.itba.pod.api.Pair;
 
 public class Query2CombinerFactory implements CombinerFactory<Pair<String, String>, Double, Double> {
     @Override

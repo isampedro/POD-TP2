@@ -13,7 +13,7 @@ import com.hazelcast.core.IList;
 import com.hazelcast.mapreduce.Job;
 import com.hazelcast.mapreduce.JobTracker;
 import com.hazelcast.mapreduce.KeyValueSource;
-import com.sun.tools.javac.util.Pair;
+import ar.edu.itba.pod.api.Pair;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;

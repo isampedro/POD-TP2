@@ -4,7 +4,7 @@ import ar.edu.itba.pod.api.Neighborhood;
 import ar.edu.itba.pod.api.Tree;
 import com.hazelcast.mapreduce.Context;
 import com.hazelcast.mapreduce.Mapper;
-import com.sun.tools.javac.util.Pair;
+import ar.edu.itba.pod.api.Pair;
 
 public class Query2Mapper implements Mapper<String, Tree, Pair<String, String>, Double> {
     private static final double serialVersionUID = 1D;

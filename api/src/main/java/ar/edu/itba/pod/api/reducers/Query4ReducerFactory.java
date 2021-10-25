@@ -2,7 +2,7 @@ package ar.edu.itba.pod.api.reducers;
 
 import com.hazelcast.mapreduce.Reducer;
 import com.hazelcast.mapreduce.ReducerFactory;
-import com.sun.tools.javac.util.Pair;
+import ar.edu.itba.pod.api.Pair;
 
 import java.util.ArrayList;
 import java.util.HashSet;

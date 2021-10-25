@@ -2,7 +2,7 @@ package ar.edu.itba.pod.api.combiners;
 
 import com.hazelcast.mapreduce.Combiner;
 import com.hazelcast.mapreduce.CombinerFactory;
-import com.sun.tools.javac.util.Pair;
+import ar.edu.itba.pod.api.Pair;
 
 import java.util.LinkedList;
 import java.util.List;
