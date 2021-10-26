@@ -1,6 +1,7 @@
 package ar.edu.itba.pod.api.client;
 
 import ar.edu.itba.pod.api.Tree;
+import ar.edu.itba.pod.api.combiners.Query3CombinerFactory;
 import ar.edu.itba.pod.api.combiners.Query4CombinerFactory;
 import ar.edu.itba.pod.api.mappers.Query3Mapper;
 import ar.edu.itba.pod.api.mappers.Query4Mapper;
@@ -46,24 +47,37 @@ public class Query4 extends BasicQuery{
          */
 
         HazelcastInstance client = getHazelcastInstance();
-        final JobTracker tracker = client.getJobTracker("query2");
+        final JobTracker tracker = client.getJobTracker("query4");
 
-        // We get all the trees and neighbourhoods
-        //TODO: llamar query3
-        Map<String, Integer> barrioEspeciesDistintas;
-        IMap<String, Integer> IbarrioEspeciesDistintas = client.getMap("trees_species_per_neighborhood");
-        IbarrioEspeciesDistintas.putAll(barrioEspeciesDistintas);
 
-        final KeyValueSource<String, Integer> sourceSpeciesPerNeighborhood = KeyValueSource.fromMap(IbarrioEspeciesDistintas);
-        final Job<String, Integer> job = tracker.newJob(sourceSpeciesPerNeighborhood);
-        final ICompletableFuture<Map<Integer, List<String>>> future = job
+        final IList<Tree> trees = preProcessTrees(client.getList(HazelcastManager.getTreeNamespace()));
+
+        //Get neighborhoods with their different tree species
+        final KeyValueSource<String, Tree> sourceTrees = KeyValueSource.fromList(trees);
+        final Job<String, Tree> job = tracker.newJob(sourceTrees);
+        final ICompletableFuture<Map<String, Integer>> future = job
+                .mapper(new Query3Mapper())
+                .combiner(new Query3CombinerFactory())
+                .reducer(new Query3ReducerFactory())
+                .submit();
+
+        final Map<String, Integer> rawResult = future.get();
+
+
+        IMap<String, Integer> differentSpecies = client.getMap("trees_species_per_neighborhood");
+        differentSpecies.putAll(rawResult);
+        final KeyValueSource<String, Integer> sourceSpeciesPerNeighborhood = KeyValueSource.fromMap(differentSpecies);
+
+
+        final Job<String, Integer> finalJob = tracker.newJob(sourceSpeciesPerNeighborhood);
+        final ICompletableFuture<Map<Integer, List<String>>> finalFuture = finalJob
                 .mapper(new Query4Mapper())
                 .combiner(new Query4CombinerFactory())
                 .reducer(new Query4ReducerFactory())
                 .submit();
 
-        final Map<Integer, List<String>> rawResult = future.get();
-        final List<String> outLines = postProcess(rawResult);
+        final Map<Integer, List<String>> finalRawResult = finalFuture.get();
+        final List<String> outLines = postProcess(finalRawResult);
         String headers = "NEIGHBOURHOOD;COMMON_NAME_COUNT";
         CsvManager.writeToCSV(getArguments(ClientArgsNames.CSV_OUTPATH), outLines, headers);
     }
