@@ -32,7 +32,7 @@ public class Query3 extends BasicQuery{
         }
 
     HazelcastInstance client = getHazelcastInstance();
-    final JobTracker tracker = client.getJobTracker("query2");
+    final JobTracker tracker = client.getJobTracker("query3");
 
     // We get all the trees and neighbourhoods
     final IList<Tree> trees = preProcessTrees(client.getList(HazelcastManager.getTreeNamespace()));

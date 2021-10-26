@@ -14,6 +14,7 @@ public class HazelcastManager {
     private static final String NEIGHBORHOOD_NAMESPACE = "neighborhood_collection";
 
     public static HazelcastInstance instanceClient(String addresses, QueryData queryData) {
+
         final ClientConfig ccfg = new ClientConfig();
         ccfg.getGroupConfig().setName("g14-cluster").setPassword("fruta");
         final String[] splitedAddresses = addresses.split(";");

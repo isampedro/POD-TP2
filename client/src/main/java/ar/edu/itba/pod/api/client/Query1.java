@@ -32,7 +32,9 @@ public class Query1 extends BasicQuery{
 
         HazelcastInstance client = getHazelcastInstance();
         final JobTracker tracker = client.getJobTracker("query1");
+
         IList<Tree> trees = preProcess(client.getList(HazelcastManager.getTreeNamespace()));
+
         KeyValueSource<String, Tree> sourceTrees = KeyValueSource.fromList(trees);
         Job<String, Tree> job = tracker.newJob(sourceTrees);
         ICompletableFuture<Map<String, Long>> future = job
