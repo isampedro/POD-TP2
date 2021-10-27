@@ -54,6 +54,7 @@ public class Query4 extends BasicQuery{
 
         //Get neighborhoods with their different tree species
         final KeyValueSource<String, Tree> sourceTrees = KeyValueSource.fromList(trees);
+
         final Job<String, Tree> job = tracker.newJob(sourceTrees);
         final ICompletableFuture<Map<String, Integer>> future = job
                 .mapper(new Query3Mapper())
