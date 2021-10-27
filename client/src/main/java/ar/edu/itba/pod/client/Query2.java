@@ -51,12 +51,12 @@ public class Query2 extends BasicQuery{
                 .submit();
 
         final Map<Pair<String,String>, Double> rawResult = future.get();
-        final List<String> outLines = postProcess(rawResult, client);
+        final List<String> outLines = postProcess(rawResult);
         String headers = "NEIGHBOURHOOD;COMMON_NAME;TREES_PER_PEOPLE";
         CsvManager.writeToCSV(getArguments(ClientArgsNames.CSV_OUTPATH), outLines, headers);
     }
 
-    private static List<String> postProcess(Map<Pair<String,String>, Double> rawResult, HazelcastInstance client) {
+    private static List<String> postProcess(Map<Pair<String,String>, Double> rawResult) {
         //TODO: MEJORAR EL CODIGO!!!!!!!!!!
         final Map<String, Double> finalMap = new HashMap<>();
         rawResult.forEach( (k, v) -> finalMap.put( k.fst + k.snd, v ));
