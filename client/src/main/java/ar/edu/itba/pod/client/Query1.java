@@ -17,6 +17,8 @@ import java.util.stream.Collectors;
 
 public class Query1 extends BasicQuery{
 
+    private static final int SUCCESS = 0;
+
     public static void main(String[] args) throws ExecutionException, InterruptedException {
 
         parseArguments();
@@ -35,7 +37,6 @@ public class Query1 extends BasicQuery{
         final JobTracker tracker = client.getJobTracker("query1");
 
         IList<Tree> trees = client.getList(HazelcastManager.getTreeNamespace());
-        System.out.println("llegue aca?");
         System.out.println("trees: " + trees.size());
         KeyValueSource<String, Tree> sourceTrees = KeyValueSource.fromList(trees);
         System.out.println("string de source: " + sourceTrees.toString());
@@ -43,20 +44,18 @@ public class Query1 extends BasicQuery{
         System.out.println("string de job: " + job.toString());
         ICompletableFuture<Map<String, Long>> future = job
                 .mapper(new Query1Mapper())
-//                .combiner(new Query1CombinerFactory())
+                .combiner(new Query1CombinerFactory())
                 .reducer(new SumReducerFactory())
                 .submit();
-
-        System.out.println("job esta?");
 
         Map<String, Long> rawResult = future.get();
         System.out.println("raw results: " + rawResult.size());
         List<String> outLines = postProcess(rawResult);
         System.out.println("lineas finales: " + outLines.size());
-        System.out.println("solo faltaria escribir");
 
         String headers = "neighbourhood;trees";
         CsvManager.writeToCSV(getArguments(ClientArgsNames.CSV_OUTPATH), outLines, headers);
+        System.exit(SUCCESS);
     }
 
     private static List<String> postProcess(Map<String, Long> rawResult) {

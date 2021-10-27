@@ -8,29 +8,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CsvManager {
+
+    private static final int COMUNA = 4;
+    private static final int NOMBRE = 11;
+    private static final int CALLE = 6;
+    private static final int BARRIO = 0;
+    private static final int POBLACION = 1;
+
     public static void writeToCSV(String outPath, List<String> results, String headers){
-        System.out.println("antes de escrirbir en el write");
         results.add(0, headers);
         int i = 0;
         StringBuffer resultChunck = new StringBuffer();
         try(BufferedWriter bw = new BufferedWriter(new FileWriter(outPath + "/query1.csv"))) {
-            System.out.println("adentro del try");
-            System.out.println("resultados: " + results.size());
             for (String result : results) {
                 System.out.println(result);
                 resultChunck.append(result).append('\n');
-                System.out.println("append");
                 i++;
                 if(i % 50 == 0) {
                     i = 0;
-                    System.out.println("write");
                     bw.write(resultChunck.toString());
                     resultChunck = new StringBuffer();
                 }
             }
-            System.out.println("pase el for?");
             if(!resultChunck.toString().equals("")) {
-                System.out.println("estoy escribiendo?");
                 bw.write(resultChunck.toString());
             }
         } catch (IOException e) {
@@ -38,7 +38,6 @@ public class CsvManager {
             System.out.println(e.getMessage());
             //logger.error("IOException {} ",e.getMessage());
         }
-        System.out.println("me quede colgado");
     }
 
     public static QueryData readCsvData(String csvInPath, String city) {
@@ -67,13 +66,13 @@ public class CsvManager {
                     title = false;
                 } else {
                     lineArgs = line.split(",");
-                    final String neighborhoodName = lineArgs[2];
-                    trees.add(new Tree(lineArgs[1],
+                    final String neighborhoodName = lineArgs[COMUNA];
+                    trees.add(new Tree(lineArgs[NOMBRE],
                             neighborhoods
                                     .stream()
                                     .filter(n -> n.getName().equals(neighborhoodName))
                                     .findAny()
-                                    .orElse(new Neighborhood(neighborhoodName, 0)), lineArgs[0]));
+                                    .orElse(new Neighborhood(neighborhoodName, 0)), lineArgs[CALLE]));
                 }
             }
 
@@ -106,7 +105,7 @@ public class CsvManager {
                     title = false;
                 } else {
                     lineArgs = line.split(",");
-                    neighborhoods.add(new Neighborhood(lineArgs[0], Long.parseLong(lineArgs[1])));
+                    neighborhoods.add(new Neighborhood(lineArgs[BARRIO], Long.parseLong(lineArgs[POBLACION])));
                 }
             }
 
@@ -116,8 +115,6 @@ public class CsvManager {
         } catch(IOException ex) {
             System.out.println("Error reading file '" + fileName + ".");
         }
-        System.out.println("barrios en levantada de archivo");
-        neighborhoods.forEach(neighborhood -> System.out.println(neighborhood.getName() + " " + neighborhood.getPopulation()));
         return neighborhoods;
     }
 }
