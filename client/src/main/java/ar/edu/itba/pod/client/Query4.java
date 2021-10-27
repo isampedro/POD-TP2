@@ -1,4 +1,4 @@
-package ar.edu.itba.pod.api.client;
+package ar.edu.itba.pod.client;
 
 import ar.edu.itba.pod.api.Tree;
 import ar.edu.itba.pod.api.combiners.Query3CombinerFactory;

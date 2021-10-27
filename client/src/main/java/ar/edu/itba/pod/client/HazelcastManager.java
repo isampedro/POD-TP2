@@ -1,4 +1,4 @@
-package ar.edu.itba.pod.api.client;
+package ar.edu.itba.pod.client;
 
 import ar.edu.itba.pod.api.Neighborhood;
 import ar.edu.itba.pod.api.Tree;

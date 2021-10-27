@@ -1,4 +1,4 @@
-package ar.edu.itba.pod.api.client;
+package ar.edu.itba.pod.client;
 
 import com.hazelcast.core.HazelcastInstance;
 import java.util.HashMap;

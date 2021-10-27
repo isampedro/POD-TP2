@@ -1,4 +1,4 @@
-package ar.edu.itba.pod.api.client;
+package ar.edu.itba.pod.client;
 
 public enum ClientArgsNames {
         ADDRESSES ("addresses"),

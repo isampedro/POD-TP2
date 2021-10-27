@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <artifactId>tpe2-g14-parent</artifactId>
-    <groupId>ar.edu.itba.pod.rmi</groupId>
+    <groupId>ar.edu.itba.pod</groupId>
     <version>1.0-SNAPSHOT</version>
   </parent>
   <artifactId>tpe2-g14-client</artifactId>
@@ -11,7 +11,7 @@
   <name>tpe2-g14-client</name>
   <dependencies>
     <dependency>
-      <groupId>ar.edu.itba.pod.rmi</groupId>
+      <groupId>ar.edu.itba.pod</groupId>
       <artifactId>tpe2-g14-api</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>

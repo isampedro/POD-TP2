@@ -1,4 +1,4 @@
-package ar.edu.itba.pod.api.rmi.server;
+package ar.edu.itba.pod.server;
 
 import com.hazelcast.mapreduce.JobTracker;
 import org.slf4j.Logger;
@@ -17,7 +17,5 @@ public class Server {
         logger.info("Starting HazelcastServer");
         Config config = new XmlConfigBuilder("../../../hazelcast.xml").build();
         Hazelcast.newHazelcastInstance(config);
-
-        JobTracker t = hz.getJobTracker("word-count");
     }
 }

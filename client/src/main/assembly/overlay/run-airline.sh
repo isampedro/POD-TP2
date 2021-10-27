@@ -1,3 +1,3 @@
 #!/bin/bash
 
-java "$@" -cp 'lib/jars/*' "ar.edu.itba.pod.rmi.client.FlightTracingClient"
+java "$@" -cp 'lib/jars/*' "ar.edu.itba.pod.client.FlightTracingClient"

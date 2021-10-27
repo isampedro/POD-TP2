@@ -3,15 +3,19 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <artifactId>tpe2-g14-parent</artifactId>
-    <groupId>ar.edu.itba.pod.rmi</groupId>
+    <groupId>ar.edu.itba.pod</groupId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <groupId>ar.edu.itba.pod.rmi</groupId>
+  <groupId>ar.edu.itba.pod</groupId>
   <artifactId>tpe2-g14-api</artifactId>
   <version>1.0-SNAPSHOT</version>
   <name>tpe2-g14-api</name>
 
   <dependencies>
+    <dependency>
+      <groupId>com.hazelcast</groupId>
+      <artifactId>hazelcast-all</artifactId>
+    </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -48,10 +52,7 @@
       <version>RELEASE</version>
       <scope>test</scope>
     </dependency>
-      <dependency>
-          <groupId>com.hazelcast</groupId>
-          <artifactId>hazelcast-all</artifactId>
-      </dependency>
+      
   </dependencies>
 
   <build>
