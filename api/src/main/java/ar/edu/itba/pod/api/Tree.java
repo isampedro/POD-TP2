@@ -1,16 +1,25 @@
 package ar.edu.itba.pod.api;
 
+import com.hazelcast.nio.ObjectDataInput;
+import com.hazelcast.nio.ObjectDataOutput;
+import com.hazelcast.nio.serialization.DataSerializable;
+
+import java.io.IOException;
 import java.util.Objects;
 
-public class Tree {
-    private final String name;
-    private final Neighborhood neighborhood;
-    private final String street;
+public class Tree implements DataSerializable {
+    private String name;
+    private Neighborhood neighborhood;
+    private String street;
 
     public Tree(String name, Neighborhood neighborhood, String street) {
         this.name = name;
         this.neighborhood = neighborhood;
         this.street = street;
+    }
+
+    public Tree() {
+
     }
 
     public String getName() {
@@ -36,5 +45,21 @@ public class Tree {
     @Override
     public int hashCode() {
         return Objects.hash(name, neighborhood, street);
+    }
+
+    @Override
+    public void writeData(ObjectDataOutput out) throws IOException {
+        neighborhood.writeData(out);
+        out.writeUTF(street);
+        out.writeUTF(name);
+    }
+
+    @Override
+    public void readData(ObjectDataInput in) throws IOException {
+        this.neighborhood = new Neighborhood();
+        neighborhood.setName(in.readUTF());
+        neighborhood.setPopulation(in.readLong());
+        this.street = in.readUTF();
+        this.name = in.readUTF();
     }
 }

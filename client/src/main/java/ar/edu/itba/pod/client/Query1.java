@@ -30,21 +30,30 @@ public class Query1 extends BasicQuery{
             return;
         }
 
+        System.out.println("Antes de todo");
         HazelcastInstance client = getHazelcastInstance();
         final JobTracker tracker = client.getJobTracker("query1");
 
-        IList<Tree> trees = preProcess(client.getList(HazelcastManager.getTreeNamespace()));
-
+        IList<Tree> trees = client.getList(HazelcastManager.getTreeNamespace());
+        System.out.println("llegue aca?");
+        System.out.println("trees: " + trees.size());
         KeyValueSource<String, Tree> sourceTrees = KeyValueSource.fromList(trees);
+        System.out.println("string de source: " + sourceTrees.toString());
         Job<String, Tree> job = tracker.newJob(sourceTrees);
+        System.out.println("string de job: " + job.toString());
         ICompletableFuture<Map<String, Long>> future = job
                 .mapper(new Query1Mapper())
-                .combiner(new Query1CombinerFactory())
+//                .combiner(new Query1CombinerFactory())
                 .reducer(new SumReducerFactory())
                 .submit();
 
+        System.out.println("job esta?");
+
         Map<String, Long> rawResult = future.get();
+        System.out.println("raw results: " + rawResult.size());
         List<String> outLines = postProcess(rawResult);
+        System.out.println("lineas finales: " + outLines.size());
+        System.out.println("solo faltaria escribir");
 
         String headers = "neighbourhood;trees";
         CsvManager.writeToCSV(getArguments(ClientArgsNames.CSV_OUTPATH), outLines, headers);
@@ -71,6 +80,7 @@ public class Query1 extends BasicQuery{
 
     private static IList<Tree> preProcess(IList<Tree> trees) {
         // que solo lleguen aquellos arboles que tienen barrio listado en barrios a los mapper
+        System.out.println("printeando neighs en preProcess");
         trees.forEach(tree -> {
             if(tree.getNeighborhood().getPopulation() == 0)
                 trees.remove(tree);

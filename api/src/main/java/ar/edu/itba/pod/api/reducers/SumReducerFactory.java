@@ -19,9 +19,7 @@ public class SumReducerFactory implements ReducerFactory<String, Long, Long> {
         }
 
         @Override
-        public void reduce(Long value) {
-            sum += value;
-        }
+        public void reduce(Long value) { sum += value; }
 
         @Override
         public Long finalizeReduce() {

@@ -9,6 +9,9 @@ public class Query1Mapper implements Mapper<String, Tree, String, Long> {
 
     @Override
     public void map(String key, Tree value, Context<String, Long> context) {
-        context.emit(value.getNeighborhood().getName(), 1L);
+        //System.out.println(value.getNeighborhood().getPopulation());
+        if(value.getNeighborhood().getPopulation() != 0) {
+            context.emit(value.getNeighborhood().getName(), 1L);
+        }
     }
 }
