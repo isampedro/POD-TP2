@@ -38,6 +38,7 @@ public class Query1Test {
             new Tree("b", new Neighborhood("40", 6), "Gral Wololo"),
             new Tree("c", new Neighborhood("40", 6), "Gral Wololo"),
             new Tree("d", new Neighborhood("40", 6), "Gral Wololo"),
+            new Tree("f", new Neighborhood("4", 0), "Gral Wololo"),
             new Tree("e", new Neighborhood("11", 2), "Av jusepe"));
 
     //Total de árboles por barrio
@@ -68,7 +69,7 @@ public class Query1Test {
 
         assertEquals("11;1",outLines.get(0));
         assertEquals("40;4", outLines.get(1));
-
+        assertEquals(2, outLines.size());
     }
 
     private static List<String> postProcess(Map<String, Long> rawResult) {

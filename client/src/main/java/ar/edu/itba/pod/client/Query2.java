@@ -40,7 +40,7 @@ public class Query2 extends BasicQuery{
         final JobTracker tracker = client.getJobTracker("query2");
 
         // We get all the trees and neighbourhoods
-        final IList<Tree> trees = preProcessTrees(client.getList(HazelcastManager.getTreeNamespace()));
+        final IList<Tree> trees = client.getList(HazelcastManager.getTreeNamespace());
 
         final KeyValueSource<String, Tree> sourceTrees = KeyValueSource.fromList(trees);
         final Job<String, Tree> job = tracker.newJob(sourceTrees);
