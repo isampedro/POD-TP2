@@ -17,21 +17,21 @@ public class Query4ReducerFactory implements ReducerFactory<Integer, Pair<Intege
 
     private class Query4Reducer extends Reducer<Pair<Integer, List<String>>, List<String>> {
 
-        private List<String> neighborhoodsForHundred;
+        private List<String> neighborhoodsForNumber;
 
         @Override
         public void reduce(Pair<Integer, List<String>> neighborhoods) {
-            neighborhoodsForHundred.addAll(neighborhoods.snd);
+            neighborhoodsForNumber.addAll(neighborhoods.snd);
         }
 
         @Override
         public void beginReduce() {
-            this.neighborhoodsForHundred = new ArrayList<>();
+            this.neighborhoodsForNumber = new ArrayList<>();
         }
 
         @Override
         public List<String> finalizeReduce() {
-            return this.neighborhoodsForHundred;
+            return this.neighborhoodsForNumber;
         }
     }
 }

@@ -4,9 +4,9 @@ import com.hazelcast.mapreduce.Combiner;
 import com.hazelcast.mapreduce.CombinerFactory;
 import ar.edu.itba.pod.api.Pair;
 
-public class Query5CombinerFactory implements CombinerFactory<Pair<String,String>, Long, Long> {
+public class Query5CombinerFactory implements CombinerFactory<String, Long, Long> {
     @Override
-    public Combiner<Long, Long> newCombiner(Pair<String, String> key) {
+    public Combiner<Long, Long> newCombiner(String key) {
         return new Query5Combiner();
     }
 

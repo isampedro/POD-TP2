@@ -78,7 +78,7 @@ public class Query4 extends BasicQuery{
 
         final Map<Integer, List<String>> finalRawResult = finalFuture.get();
         final List<String> outLines = postProcess(finalRawResult);
-        String headers = "NEIGHBOURHOOD;COMMON_NAME_COUNT";
+        String headers = "GROUP;NEIGHBOURHOOD A;NEIGHBOURHOOD B";
         CsvManager.writeToCSV(getArguments(ClientArgsNames.CSV_OUTPATH), outLines, headers);
     }
 
@@ -96,7 +96,7 @@ public class Query4 extends BasicQuery{
         rawResult.forEach((hundred, neighborhoods) -> {
             for(int i = 0; i < neighborhoods.size(); i++) {
                 for(int j = i + 1; j < neighborhoods.size(); j++) {
-                    neighborhoodPairs.add(neighborhoods.get(i) + ";" + neighborhoods.get(j));
+                    neighborhoodPairs.add(hundred + ";" + neighborhoods.get(i) + ";" + neighborhoods.get(j));
                 }
             }
         });

@@ -2,14 +2,21 @@ package ar.edu.itba.pod.api.client;
 
 import ar.edu.itba.pod.api.Tree;
 import ar.edu.itba.pod.api.combiners.Query1CombinerFactory;
+import ar.edu.itba.pod.api.combiners.Query3CombinerFactory;
+import ar.edu.itba.pod.api.combiners.Query4CombinerFactory;
 import ar.edu.itba.pod.api.combiners.Query5CombinerFactory;
 import ar.edu.itba.pod.api.mappers.Query1Mapper;
+import ar.edu.itba.pod.api.mappers.Query4Mapper;
 import ar.edu.itba.pod.api.mappers.Query5Mapper;
+import ar.edu.itba.pod.api.mappers.Query5MapperB;
+import ar.edu.itba.pod.api.reducers.Query3ReducerFactory;
+import ar.edu.itba.pod.api.reducers.Query4ReducerFactory;
 import ar.edu.itba.pod.api.reducers.SumReducerFactory;
 import ar.edu.itba.pod.api.reducers.SumReducerFactoryQuery5;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.ICompletableFuture;
 import com.hazelcast.core.IList;
+import com.hazelcast.core.IMap;
 import com.hazelcast.mapreduce.Job;
 import com.hazelcast.mapreduce.JobTracker;
 import com.hazelcast.mapreduce.KeyValueSource;
@@ -35,51 +42,60 @@ public class Query5 extends BasicQuery{
         }
 
         HazelcastInstance client = getHazelcastInstance();
-        final JobTracker tracker = client.getJobTracker("query1");
+        final JobTracker tracker = client.getJobTracker("query5");
+
         IList<Tree> trees = preProcessTrees(client.getList(HazelcastManager.getTreeNamespace()));
+
+        //getting how many trees of the specie there are for each street
         KeyValueSource<String, Tree> sourceTrees = KeyValueSource.fromList(trees);
         Job<String, Tree> job = tracker.newJob(sourceTrees);
-        ICompletableFuture<Map<Pair<String,String>, Long>> future = job
-                .mapper(new Query5Mapper())
+        ICompletableFuture<Map<String, Long>> future = job
+                .mapper(new Query5Mapper(getArguments(ClientArgsNames.COMMON_NAME), getArguments(ClientArgsNames.NEIGHBOURHOOD)))
                 .combiner(new Query5CombinerFactory())
                 .reducer(new SumReducerFactoryQuery5())
                 .submit();
 
-        Map<Pair<String, String>, Long> rawResult = future.get();
-        List<String> outLines = postProcess(rawResult, getArguments(ClientArgsNames.NEIGHBOURHOOD), getArguments(ClientArgsNames.COMMON_NAME));
+        Map<String, Long> rawResult = future.get();
+
+        IMap<String, Long> specieTrees = client.getMap("specie_tree_per_street");
+        specieTrees.putAll(rawResult);
+        final KeyValueSource<String, Long> sourceSpeciesPerStreet = KeyValueSource.fromMap(specieTrees);
+
+
+        final Job<String, Long> finalJob = tracker.newJob(sourceSpeciesPerStreet);
+        final ICompletableFuture<Map<Integer, List<String>>> finalFuture = finalJob
+                .mapper(new Query5MapperB())
+                .combiner(new Query4CombinerFactory())
+                .reducer(new Query4ReducerFactory())
+                .submit();
+
+        final Map<Integer, List<String>> finalRawResult = finalFuture.get();
+
+        List<String> outLines = postProcess(finalRawResult, getArguments(ClientArgsNames.COMMON_NAME));
 
         String headers = "GROUP;STREET A; STREET B";
         CsvManager.writeToCSV(getArguments(ClientArgsNames.CSV_OUTPATH), outLines, headers);
     }
 
-    private static List<String> postProcess( final Map<Pair<String, String>, Long> rawResult, String neighbourhood, String commonName ) {
-        final Map<Pair<String,String>, Long> filteredRawResult = rawResult.entrySet().stream()
-                        .filter( x -> x.getKey().fst.equals(neighbourhood))
-                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        final Map<String, String> streetPairs = new HashMap<>();
-        filteredRawResult.forEach( (k, v) -> {
-            filteredRawResult.forEach( (k1, v1) -> {
-                if( !k.snd.equals(k1.snd) && v.equals(v1) ) {
-                    if( !streetPairs.containsKey(k.snd) && !(streetPairs.containsKey(k1.fst) && !streetPairs.get(k1.fst).contains(k.snd)) )
-                        streetPairs.put(k.snd, k1.snd);
+    private static List<String> postProcess( final Map<Integer,List<String>> rawResult, String commonName ) {
+        final List<String> streetPairs = new LinkedList<>();
+        rawResult.forEach((ten, streets) -> {
+            for(int i = 0; i < streets.size(); i++) {
+                for(int j = i + 1; j < streets.size(); j++) {
+                    streetPairs.add(ten + ";" + streets.get(i) + ";" + streets.get(j));
                 }
-            });
+            }
         });
-        List<Map.Entry<String, Integer>> result = filteredRawResult.entrySet().stream()
-                                                    .sorted(Comparator.comparing())
-        List<Map.Entry<String, Integer>> result = rawResult.entrySet().stream()
-                .sorted(Comparator.comparing((Function<Map.Entry<Pair<String,String>, Long>, Integer>) Map.Entry::getValue)
-                        .thenComparing(Map.Entry::getKey)).collect(Collectors.toList());
 
-        return result.stream()
-                .map(entry -> entry.getKey() + ";" + entry.getValue())
+        return streetPairs.stream()
+                .sorted()
                 .collect(Collectors.toList());
     }
 
     private static IList<Tree> preProcessTrees(IList<Tree> trees) {
         // que solo lleguen aquellos arboles que tienen barrio listado en barrios a los mapper
         trees.forEach(tree -> {
-            if(tree.getNeighborhood().getPopulation() == 0)
+            if(tree.getNeighborhood().getPopulation() == 0 )
                 trees.remove(tree);
         });
         return trees;

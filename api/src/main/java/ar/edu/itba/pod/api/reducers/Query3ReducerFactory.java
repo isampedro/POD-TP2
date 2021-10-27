@@ -8,7 +8,7 @@ import java.util.Set;
 
 public class Query3ReducerFactory implements ReducerFactory<String, Set<String>, Integer> {
     @Override
-    public Reducer<Set<String>, Integer> newReducer(String neighborhood) {
+    public Reducer<Set<String>, Integer> newReducer(String s) {
         return new Query3Reducer();
     }
 

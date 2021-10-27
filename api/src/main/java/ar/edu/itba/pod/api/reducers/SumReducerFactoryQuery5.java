@@ -4,9 +4,12 @@ import com.hazelcast.mapreduce.Reducer;
 import com.hazelcast.mapreduce.ReducerFactory;
 import ar.edu.itba.pod.api.Pair;
 
-public class SumReducerFactoryQuery5 implements ReducerFactory<Pair<String,String>, Long, Long> {
+import java.util.List;
+import java.util.Map;
+
+public class SumReducerFactoryQuery5 implements ReducerFactory<String, Long, Long> {
     @Override
-    public Reducer<Long, Long> newReducer(Pair<String,String> s) {
+    public Reducer<Long, Long> newReducer(String s) {
         return new SumReducer();
     }
 

@@ -17,10 +17,10 @@ public class Query4CombinerFactory implements CombinerFactory<Integer, String, P
     private class Query4Combiner extends Combiner<String, Pair<Integer, List<String>>> {
 
         private final List<String> neighborhoods;
-        private final Integer hundred;
+        private final Integer number;
 
-        public Query4Combiner(Integer hundred) {
-            this.hundred = hundred;
+        public Query4Combiner(Integer number) {
+            this.number = number;
             this.neighborhoods = new LinkedList<>();
         }
 
@@ -36,7 +36,7 @@ public class Query4CombinerFactory implements CombinerFactory<Integer, String, P
 
         @Override
         public Pair<Integer, List<String>> finalizeChunk() {
-            return new Pair<>(this.hundred, this.neighborhoods);
+            return new Pair<>(this.number, this.neighborhoods);
         }
     }
 }
