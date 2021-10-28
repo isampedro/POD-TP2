@@ -25,9 +25,13 @@ public class HazelcastManager {
         final HazelcastInstance client = HazelcastClient.newHazelcastClient(ccfg);
 
         IList<Tree> trees = client.getList(TREE_NAMESPACE);
-        trees.addAll(queryData.getTrees());
+        if(trees.size() == 0) {
+            trees.addAll(queryData.getTrees());
+        }
         IList<Neighborhood> neighborhoods = client.getList(NEIGHBORHOOD_NAMESPACE);
-        neighborhoods.addAll(queryData.getNeighborhoods());
+        if(neighborhoods.size() == 0) {
+            neighborhoods.addAll(queryData.getNeighborhoods());
+        }
         return client;
     }
 
