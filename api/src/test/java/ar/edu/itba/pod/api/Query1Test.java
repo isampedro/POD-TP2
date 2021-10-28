@@ -33,14 +33,16 @@ public class Query1Test {
         Hazelcast.shutdownAll();
     }
 
-    private static final List<Tree> trees = Arrays.asList(
-            new Tree("a", new Neighborhood("40", 6), "Gral Wololo"),
-            new Tree("b", new Neighborhood("40", 6), "Gral Wololo"),
-            new Tree("c", new Neighborhood("40", 6), "Gral Wololo"),
-            new Tree("d", new Neighborhood("40", 6), "Gral Wololo"),
-            new Tree("f", new Neighborhood("4", 0), "Gral Wololo"),
-            new Tree("e", new Neighborhood("11", 2), "Av jusepe"));
+    private static final Neighborhood neigh1 =new Neighborhood("Capital", 2);
+    private static final Neighborhood neigh2 =new Neighborhood("Ituzaingo", 4);
 
+    private static final List<Tree> trees = Arrays.asList(
+            new Tree("a",neigh1, "Gral Wololo"),
+            new Tree("b",neigh1, "Gral Wololo"),
+            new Tree("c",neigh1, "Gral Wololo"),
+            new Tree("d",neigh1, "Gral Wololo"),
+            new Tree("e",neigh1, "Gral Wololo"),
+            new Tree("f",neigh2, "Av jusepe"));
     //Total de árboles por barrio
     @Test
     public void query1Test() throws InterruptedException, ExecutionException {

@@ -1,5 +1,5 @@
 package ar.edu.itba.pod.api;
-/*
+
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -35,12 +35,16 @@ public class Query5Test {
     private static final String COMMON_NAME = "2";
     private static final String NEIGHBOURHOOD = "2";
 
+    private static final Neighborhood neigh1 =new Neighborhood("Capital", 2);
+    private static final Neighborhood neigh2 =new Neighborhood("Ituzaingo", 4);
+
     private static final List<Tree> trees = Arrays.asList(
-            new Tree("a", new Neighborhood("40", 6), "Gral Wololo"),
-            new Tree("a", new Neighborhood("40", 6), "Gral Wololo"),
-            new Tree("c", new Neighborhood("40", 6), "Gral Wololo"),
-            new Tree("d", new Neighborhood("40", 6), "Gral Wololo"),
-            new Tree("e", new Neighborhood("11", 2), "Av jusepe"));
+            new Tree("a",neigh1, "Gral Wololo"),
+            new Tree("a",neigh1, "Gral Wololo"),
+            new Tree("c",neigh1, "Gral Wololo"),
+            new Tree("d",neigh1, "Gral Wololo"),
+            new Tree("d",neigh1, "Gral Wololo"),
+            new Tree("e",neigh2, "Av jusepe"));
 
     // Top n barrios con mayor cantidad de especies distintas
     @Test
@@ -104,4 +108,3 @@ public class Query5Test {
     }
 
 }
-*/
