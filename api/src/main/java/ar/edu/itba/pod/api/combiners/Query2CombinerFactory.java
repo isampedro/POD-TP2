@@ -1,7 +1,5 @@
 package ar.edu.itba.pod.api.combiners;
 
-import ar.edu.itba.pod.api.Neighborhood;
-import ar.edu.itba.pod.api.Tree;
 import com.hazelcast.mapreduce.Combiner;
 import com.hazelcast.mapreduce.CombinerFactory;
 import ar.edu.itba.pod.api.Pair;

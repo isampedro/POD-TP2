@@ -53,8 +53,8 @@ public class Query4Test {
             new Tree("e", neigh5, "Av jusepeSuelasBoca"));
 
 
-
-    // Pares de barrios que registran la misma cantidad de cientos de especies distintas
+    // Pares de barrios que registran la misma cantidad de cientos de especies
+    // distintas
     @Test
     public void query4Test() throws InterruptedException, ExecutionException {
 
@@ -121,5 +121,8 @@ public class Query4Test {
         });
         return neighborPairs;
 
+        return neighborhoodPairs.stream()
+                .sorted()
+                .collect(Collectors.toList());
     }
 }

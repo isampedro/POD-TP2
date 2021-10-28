@@ -35,8 +35,8 @@ public class Query5Test {
     private static final String COMMON_NAME = "luca";
     private static final String NEIGHBOURHOOD = "Capital";
 
-    private static final Neighborhood neigh1 =new Neighborhood("Capital", 2);
-    private static final Neighborhood neigh2 =new Neighborhood("Ituzaingo", 4);
+    private static final Neighborhood neigh1 = new Neighborhood("Capital", 2);
+    private static final Neighborhood neigh2 = new Neighborhood("Ituzaingo", 4);
 
     private static final List<Tree> trees = Arrays.asList(
             new Tree("a",neigh1, "Gral Wololo"),
@@ -46,7 +46,8 @@ public class Query5Test {
             new Tree("luca",neigh1, "Ale el mejor"),
             new Tree("e",neigh2, "Av jusepe"));
 
-    // Pares de calles de un barrio X que registran la misma cantidad de decenas de árboles de una especie Y
+    // Pares de calles de un barrio X que registran la misma cantidad de decenas de
+    // árboles de una especie Y
     @Test
     public void query5Test() throws InterruptedException, ExecutionException {
 
@@ -56,27 +57,24 @@ public class Query5Test {
         iTrees.addAll(trees);
 
         for (int i = 0; i < 25; i++)
-            iTrees.add(new Tree("luca" ,neigh1, "Gral Wololo"));
+            iTrees.add(new Tree("luca", neigh1, "Gral Wololo"));
         for (int i = 0; i < 24; i++)
-            iTrees.add(new Tree("luca" ,neigh1, "Cpt wolo"));
+            iTrees.add(new Tree("luca", neigh1, "Cpt wolo"));
         for (int i = 0; i < 12; i++)
-            iTrees.add(new Tree("luca" ,neigh1, "Bcalle de luca"));
+            iTrees.add(new Tree("luca", neigh1, "Bcalle de luca"));
         for (int i = 0; i < 13; i++)
-            iTrees.add(new Tree("luca" ,neigh1, "Acalle ale"));
+            iTrees.add(new Tree("luca", neigh1, "Acalle ale"));
         for (int i = 0; i < 10; i++)
-            iTrees.add(new Tree("luca" ,neigh1, "Ccalle de pepe"));
+            iTrees.add(new Tree("luca", neigh1, "Ccalle de pepe"));
 
         final JobTracker tracker = h.getJobTracker("query5");
 
         final KeyValueSource<String, Tree> sourceTrees = KeyValueSource.fromList(iTrees);
 
-        //getting how many trees of the specie there are for each street
+        // getting how many trees of the specie there are for each street
         Job<String, Tree> job = tracker.newJob(sourceTrees);
-        ICompletableFuture<Map<String, Long>> future = job
-                .mapper(new Query5Mapper(COMMON_NAME, NEIGHBOURHOOD))
-                .combiner(new Query5CombinerFactory())
-                .reducer(new SumReducerFactoryQuery5())
-                .submit();
+        ICompletableFuture<Map<String, Long>> future = job.mapper(new Query5Mapper(COMMON_NAME, NEIGHBOURHOOD))
+                .combiner(new Query5CombinerFactory()).reducer(new SumReducerFactoryQuery5()).submit();
 
         Map<String, Long> rawResult = future.get();
 
@@ -86,13 +84,9 @@ public class Query5Test {
         specieTrees.putAll(rawResult);
         final KeyValueSource<String, Long> sourceSpeciesPerStreet = KeyValueSource.fromMap(specieTrees);
 
-
         final Job<String, Long> finalJob = tracker.newJob(sourceSpeciesPerStreet);
-        final ICompletableFuture<Map<Integer, ArrayList<String>>> finalFuture = finalJob
-                .mapper(new Query5MapperB())
-                .combiner(new Query4CombinerFactory())
-                .reducer(new Query4ReducerFactory())
-                .submit();
+        final ICompletableFuture<Map<Integer, ArrayList<String>>> finalFuture = finalJob.mapper(new Query5MapperB())
+                .combiner(new Query4CombinerFactory()).reducer(new Query4ReducerFactory()).submit();
 
         final Map<Integer, ArrayList<String>> finalRawResult = finalFuture.get();
 

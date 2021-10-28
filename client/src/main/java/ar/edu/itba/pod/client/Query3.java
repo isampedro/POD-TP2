@@ -11,44 +11,46 @@ import com.hazelcast.mapreduce.Job;
 import com.hazelcast.mapreduce.JobTracker;
 import com.hazelcast.mapreduce.KeyValueSource;
 
+import org.apache.commons.lang3.math.NumberUtils;
+
 import java.util.*;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class Query3 extends BasicQuery{
-    public static void main(String[] args) throws ExecutionException, InterruptedException {
+public class Query3 extends BasicQuery {
+    private static final int SUCCESS = 0, FAILURE = 1;
 
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
 
         parseArguments();
         try {
             if (commonArgsNull() || getArguments(ClientArgsNames.N) == null)
                 throw new IllegalArgumentException("Address, in directory and out directory must be specified.");
+            if (!commonArgsOK() || NumberUtils.isCreatable(getArguments(ClientArgsNames.N))) {
+                throw new IllegalArgumentException("City, inPath and outPath must be correctly spelled.");
+            }
 
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
-            return;
+            System.exit(FAILURE);
         }
 
-    HazelcastInstance client = getHazelcastInstance();
-    final JobTracker tracker = client.getJobTracker("query3");
+        HazelcastInstance client = getHazelcastInstance();
+        final JobTracker tracker = client.getJobTracker("query3");
 
-    // We get all the trees and neighbourhoods
-    final IList<Tree> trees = preProcessTrees(client.getList(HazelcastManager.getTreeNamespace()));
+        // We get all the trees and neighbourhoods
+        final IList<Tree> trees = client.getList(HazelcastManager.getTreeNamespace());
 
-    final KeyValueSource<String, Tree> sourceTrees = KeyValueSource.fromList(trees);
-    final Job<String, Tree> job = tracker.newJob(sourceTrees);
-    final ICompletableFuture<Map<String, Integer>> future = job
-            .mapper(new Query3Mapper())
-            .combiner(new Query3CombinerFactory())
-            .reducer(new Query3ReducerFactory())
-            .submit();
+        final KeyValueSource<String, Tree> sourceTrees = KeyValueSource.fromList(trees);
+        final Job<String, Tree> job = tracker.newJob(sourceTrees);
+        final ICompletableFuture<Map<String, Integer>> future = job.mapper(new Query3Mapper())
+                .combiner(new Query3CombinerFactory()).reducer(new Query3ReducerFactory()).submit();
 
-    final Map<String, Integer> rawResult = future.get();
-    final List<String> outLines = postProcess(rawResult, Integer.parseInt(ClientArgsNames.N.getArgumentName()));
-    String headers = "NEIGHBOURHOOD;COMMON_NAME_COUNT";
-    CsvManager.writeToCSV(getArguments(ClientArgsNames.CSV_OUTPATH), outLines, headers);
-
+        final Map<String, Integer> rawResult = future.get();
+        final List<String> outLines = postProcess(rawResult, Integer.parseInt(ClientArgsNames.N.getArgumentName()));
+        String headers = "NEIGHBOURHOOD;COMMON_NAME_COUNT";
+        CsvManager.writeToCSV(getArguments(ClientArgsNames.CSV_OUTPATH), outLines, headers);
+        System.exit(SUCCESS);
     }
 
     private static List<String> postProcess(Map<String, Integer> rawResult, int n) {
@@ -56,21 +58,16 @@ public class Query3 extends BasicQuery{
         Map<String, Integer> result = sortByValue(rawResult);
         List<String> l = new ArrayList<>(result.keySet());
 
-        return l.stream()
-                .map(entry -> entry + ";" + result.get(entry))
-                .collect(Collectors.toList()).subList(0, n);
+        return l.stream().map(entry -> entry + ";" + result.get(entry)).collect(Collectors.toList()).subList(0, n);
     }
 
-    public static Map<String, Integer> sortByValue(Map<String, Integer> hm)
-    {
+    public static Map<String, Integer> sortByValue(Map<String, Integer> hm) {
         // Create a list from elements of HashMap
-        List<Map.Entry<String, Integer> > list =
-                new LinkedList<>(hm.entrySet());
+        List<Map.Entry<String, Integer>> list = new LinkedList<>(hm.entrySet());
 
         // Sort the list
         list.sort(new Comparator<Map.Entry<String, Integer>>() {
-            public int compare(Map.Entry<String, Integer> o1,
-                               Map.Entry<String, Integer> o2) {
+            public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) {
                 return (o2.getValue()).compareTo(o1.getValue());
             }
         });
@@ -81,14 +78,5 @@ public class Query3 extends BasicQuery{
             temp.put(aa.getKey(), aa.getValue());
         }
         return temp;
-    }
-
-    private static IList<Tree> preProcessTrees(IList<Tree> trees) {
-        // que solo lleguen aquellos arboles que tienen barrio listado en barrios a los mapper
-        trees.forEach(tree -> {
-            if(tree.getNeighborhood().getPopulation() == 0)
-                trees.remove(tree);
-        });
-        return trees;
     }
 }

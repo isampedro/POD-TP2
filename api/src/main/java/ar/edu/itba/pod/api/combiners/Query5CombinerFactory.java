@@ -2,7 +2,6 @@ package ar.edu.itba.pod.api.combiners;
 
 import com.hazelcast.mapreduce.Combiner;
 import com.hazelcast.mapreduce.CombinerFactory;
-import ar.edu.itba.pod.api.Pair;
 
 public class Query5CombinerFactory implements CombinerFactory<String, Long, Long> {
     @Override

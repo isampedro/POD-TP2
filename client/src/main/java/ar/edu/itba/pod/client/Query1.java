@@ -15,9 +15,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class Query1 extends BasicQuery{
+public class Query1 extends BasicQuery {
 
-    private static final int SUCCESS = 0;
+    private static final int SUCCESS = 0, FAILURE = 1;
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
 
@@ -25,11 +25,14 @@ public class Query1 extends BasicQuery{
 
         try {
             if (commonArgsNull())
-               throw new IllegalArgumentException("Address, in directory and out directory must be specified.");
+                throw new IllegalArgumentException("Address, in directory and out directory must be specified.");
+            if (!commonArgsOK()) {
+                throw new IllegalArgumentException("City, inPath and outPath must be correctly spelled.");
+            }
 
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
-            return;
+            System.exit(FAILURE);
         }
 
         System.out.println("Antes de todo");
@@ -42,11 +45,8 @@ public class Query1 extends BasicQuery{
         System.out.println("string de source: " + sourceTrees.toString());
         Job<String, Tree> job = tracker.newJob(sourceTrees);
         System.out.println("string de job: " + job.toString());
-        ICompletableFuture<Map<String, Long>> future = job
-                .mapper(new Query1Mapper())
-                .combiner(new Query1CombinerFactory())
-                .reducer(new SumReducerFactory())
-                .submit();
+        ICompletableFuture<Map<String, Long>> future = job.mapper(new Query1Mapper())
+                .combiner(new Query1CombinerFactory()).reducer(new SumReducerFactory()).submit();
 
         Map<String, Long> rawResult = future.get();
         System.out.println("raw results: " + rawResult.size());
@@ -59,31 +59,24 @@ public class Query1 extends BasicQuery{
     }
 
     private static List<String> postProcess(Map<String, Long> rawResult) {
-        //IList<Neighborhood> neighborhoods = client.getList(HazelcastManager.getNeighborhoodNamespace());
-        //final List<String> neighborhoodsNames = neighborhoods.stream()
-        //        .map(Neighborhood::getName).collect(Collectors.toList());
+        // IList<Neighborhood> neighborhoods =
+        // client.getList(HazelcastManager.getNeighborhoodNamespace());
+        // final List<String> neighborhoodsNames = neighborhoods.stream()
+        // .map(Neighborhood::getName).collect(Collectors.toList());
 
-        /*List<Map.Entry<String, Long>> result = rawResult.entrySet().stream()
-                .filter(entry -> neighborhoodsNames.contains(entry.getKey()))
-                .sorted(Comparator.comparing((Function<Map.Entry<String, Long>, Long>) Map.Entry::getValue)
-                        .thenComparing(Map.Entry::getKey)).collect(Collectors.toList()); */
+        /*
+         * List<Map.Entry<String, Long>> result = rawResult.entrySet().stream()
+         * .filter(entry -> neighborhoodsNames.contains(entry.getKey()))
+         * .sorted(Comparator.comparing((Function<Map.Entry<String, Long>, Long>)
+         * Map.Entry::getValue)
+         * .thenComparing(Map.Entry::getKey)).collect(Collectors.toList());
+         */
 
         List<Map.Entry<String, Long>> result = rawResult.entrySet().stream()
                 .sorted(Comparator.comparing((Function<Map.Entry<String, Long>, Long>) Map.Entry::getValue)
-                .thenComparing(Map.Entry::getKey)).collect(Collectors.toList());
-
-        return result.stream()
-                .map(entry -> entry.getKey() + ";" + entry.getValue())
+                        .thenComparing(Map.Entry::getKey))
                 .collect(Collectors.toList());
-    }
 
-    private static IList<Tree> preProcess(IList<Tree> trees) {
-        // que solo lleguen aquellos arboles que tienen barrio listado en barrios a los mapper
-        System.out.println("printeando neighs en preProcess");
-        trees.forEach(tree -> {
-            if(tree.getNeighborhood().getPopulation() == 0)
-                trees.remove(tree);
-        });
-        return trees;
+        return result.stream().map(entry -> entry.getKey() + ";" + entry.getValue()).collect(Collectors.toList());
     }
 }
