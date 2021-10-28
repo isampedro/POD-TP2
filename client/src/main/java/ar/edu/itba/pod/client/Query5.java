@@ -41,7 +41,7 @@ public class Query5 extends BasicQuery {
         HazelcastInstance client = getHazelcastInstance();
         final JobTracker tracker = client.getJobTracker("query5");
 
-        IList<Tree> trees = preProcessTrees(client.getList(HazelcastManager.getTreeNamespace()));
+        IList<Tree> trees = client.getList(HazelcastManager.getTreeNamespace());
 
         // getting how many trees of the specie there are for each street
         KeyValueSource<String, Tree> sourceTrees = KeyValueSource.fromList(trees);
@@ -81,15 +81,5 @@ public class Query5 extends BasicQuery {
         });
 
         return streetPairs.stream().sorted().collect(Collectors.toList());
-    }
-
-    private static IList<Tree> preProcessTrees(IList<Tree> trees) {
-        // que solo lleguen aquellos arboles que tienen barrio listado en barrios a los
-        // mapper
-        trees.forEach(tree -> {
-            if (tree.getNeighborhood().getPopulation() == 0)
-                trees.remove(tree);
-        });
-        return trees;
     }
 }

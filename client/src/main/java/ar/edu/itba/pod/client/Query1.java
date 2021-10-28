@@ -79,15 +79,4 @@ public class Query1 extends BasicQuery {
 
         return result.stream().map(entry -> entry.getKey() + ";" + entry.getValue()).collect(Collectors.toList());
     }
-
-    private static IList<Tree> preProcess(IList<Tree> trees) {
-        // que solo lleguen aquellos arboles que tienen barrio listado en barrios a los
-        // mapper
-        System.out.println("printeando neighs en preProcess");
-        trees.forEach(tree -> {
-            if (tree.getNeighborhood().getPopulation() == 0)
-                trees.remove(tree);
-        });
-        return trees;
-    }
 }

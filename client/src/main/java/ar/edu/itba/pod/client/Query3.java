@@ -37,7 +37,7 @@ public class Query3 extends BasicQuery {
         final JobTracker tracker = client.getJobTracker("query3");
 
         // We get all the trees and neighbourhoods
-        final IList<Tree> trees = preProcessTrees(client.getList(HazelcastManager.getTreeNamespace()));
+        final IList<Tree> trees = client.getList(HazelcastManager.getTreeNamespace());
 
         final KeyValueSource<String, Tree> sourceTrees = KeyValueSource.fromList(trees);
         final Job<String, Tree> job = tracker.newJob(sourceTrees);
@@ -76,15 +76,5 @@ public class Query3 extends BasicQuery {
             temp.put(aa.getKey(), aa.getValue());
         }
         return temp;
-    }
-
-    private static IList<Tree> preProcessTrees(IList<Tree> trees) {
-        // que solo lleguen aquellos arboles que tienen barrio listado en barrios a los
-        // mapper
-        trees.forEach(tree -> {
-            if (tree.getNeighborhood().getPopulation() == 0)
-                trees.remove(tree);
-        });
-        return trees;
     }
 }

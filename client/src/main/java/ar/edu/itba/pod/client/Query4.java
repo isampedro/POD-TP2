@@ -48,7 +48,7 @@ public class Query4 extends BasicQuery {
         HazelcastInstance client = getHazelcastInstance();
         final JobTracker tracker = client.getJobTracker("query4");
 
-        final IList<Tree> trees = preProcessTrees(client.getList(HazelcastManager.getTreeNamespace()));
+        final IList<Tree> trees = client.getList(HazelcastManager.getTreeNamespace());
 
         // Get neighborhoods with their different tree species
         final KeyValueSource<String, Tree> sourceTrees = KeyValueSource.fromList(trees);
@@ -72,16 +72,6 @@ public class Query4 extends BasicQuery {
         String headers = "GROUP;NEIGHBOURHOOD A;NEIGHBOURHOOD B";
         CsvManager.writeToCSV(getArguments(ClientArgsNames.CSV_OUTPATH), outLines, headers);
         System.exit(SUCCESS);
-    }
-
-    private static IList<Tree> preProcessTrees(IList<Tree> trees) {
-        // que solo lleguen aquellos arboles que tienen barrio listado en barrios a los
-        // mapper
-        trees.forEach(tree -> {
-            if (tree.getNeighborhood().getPopulation() == 0)
-                trees.remove(tree);
-        });
-        return trees;
     }
 
     private static List<String> postProcess(Map<Integer, ArrayList<String>> rawResult) {

@@ -16,7 +16,9 @@ public class Query5Mapper implements Mapper<String, Tree, String, Long> {
 
     @Override
     public void map(String key, Tree value, Context<String, Long> context) {
-        if (value.getName().equals(specie) && value.getNeighborhood().getName().equals(neighbour))
-            context.emit(value.getStreet(), 1L);
+        if (value.getNeighborhood().getPopulation() != 0) {
+            if (value.getName().equals(specie) && value.getNeighborhood().getName().equals(neighbour))
+                context.emit(value.getStreet(), 1L);
+        }
     }
 }
