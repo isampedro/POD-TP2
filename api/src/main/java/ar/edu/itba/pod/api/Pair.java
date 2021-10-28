@@ -14,9 +14,6 @@ public class Pair<A extends Serializable & Comparable<A>, B extends Serializable
         this.snd = snd;
     }
 
-    public Pair() {
-
-    }
 
     public String toString() {
         return fst + ";" + snd;
@@ -33,10 +30,6 @@ public class Pair<A extends Serializable & Comparable<A>, B extends Serializable
         if (fst == null) return (snd == null) ? 0 : snd.hashCode() + 1;
         else if (snd == null) return fst.hashCode() + 2;
         else return fst.hashCode() * 17 + snd.hashCode();
-    }
-
-    public static <A extends Serializable & Comparable<A>, B extends Serializable> Pair<A,B> of(A a, B b) {
-        return new Pair<>(a,b);
     }
 
     @Override

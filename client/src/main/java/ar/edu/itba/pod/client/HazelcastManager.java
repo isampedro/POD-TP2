@@ -37,8 +37,4 @@ public class HazelcastManager {
     public static String getTreeNamespace() {
         return TREE_NAMESPACE;
     }
-
-    public static String getNeighborhoodNamespace() {
-        return NEIGHBORHOOD_NAMESPACE;
-    }
 }

@@ -59,7 +59,7 @@ public class Query1 extends BasicQuery {
 
     private static List<String> postProcess(Map<String, Long> rawResult) {
 
-        Map<String, Long> result = sortByValue(rawResult);
+        Map<String, Long> result = Utils.sortByValue(rawResult);
         List<String> l = new ArrayList<>(result.keySet());
 
         return l.stream().map(entry -> entry + ";" + result.get(entry)).collect(Collectors.toList());
