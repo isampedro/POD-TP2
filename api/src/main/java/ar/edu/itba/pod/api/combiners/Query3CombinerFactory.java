@@ -9,7 +9,7 @@ import java.util.Set;
 public class Query3CombinerFactory implements CombinerFactory<String, String, Set<String>> {
     @Override
     public Combiner<String, Set<String>> newCombiner(String s) {
-        return null;
+        return new Query3Combiner();
     }
 
     private class Query3Combiner extends Combiner<String, Set<String>> {

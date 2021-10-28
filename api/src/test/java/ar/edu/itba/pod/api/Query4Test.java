@@ -44,14 +44,22 @@ public class Query4Test {
             new Tree("d",neigh1, "Gral Wololo"),
             new Tree("e",neigh2, "Av jusepe"));
 
+
     // Pares de barrios que registran la misma cantidad de cientos de especies distintas
     @Test
-    public void query1Test() throws InterruptedException, ExecutionException {
+    public void query4Test() throws InterruptedException, ExecutionException {
+
+
 
         HazelcastInstance h = Hazelcast.newHazelcastInstance();
 
         IList<Tree> iTrees = h.getList("treeTEST");
         iTrees.addAll(trees);
+
+        for (int i = 0; i < 123; i++)
+            iTrees.add(new Tree("a",neigh1, "Gral Wololo"));
+        for (int i = 0; i < 99; i++)
+            iTrees.add(new Tree("c",neigh1, "Cpt wolo"));
 
         final JobTracker tracker = h.getJobTracker("query4");
 
@@ -84,7 +92,7 @@ public class Query4Test {
 
 //        assertEquals(2, outLines.size());
 
-
+        System.out.println(outLines);
         //assertEquals("11;1",outLines.get(0));
         //assertEquals("40;4", outLines.get(1));
 
