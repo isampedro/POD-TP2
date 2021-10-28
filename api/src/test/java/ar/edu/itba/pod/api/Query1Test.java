@@ -2,7 +2,6 @@ package ar.edu.itba.pod.api;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.junit.After;
@@ -55,7 +54,7 @@ public class Query1Test {
 
         Job<String, Tree> job = tracker.newJob(sourceTrees);
         ICompletableFuture<Map<String, Long>> future = job.mapper(new Query1Mapper())
-                .combiner(new Query1CombinerFactory()).reducer(new SumReducerFactory()).submit();
+                .combiner(new LongSumCombiner()).reducer(new LongSumReducerFactory()).submit();
 
         Map<String, Long> rawResult = future.get();
         List<String> outLines = postProcess(rawResult);

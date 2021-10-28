@@ -1,12 +1,12 @@
 package ar.edu.itba.pod.client;
 
 import ar.edu.itba.pod.api.Tree;
+import ar.edu.itba.pod.api.combiners.LongSumCombiner;
 import ar.edu.itba.pod.api.combiners.Query4CombinerFactory;
-import ar.edu.itba.pod.api.combiners.Query5CombinerFactory;
 import ar.edu.itba.pod.api.mappers.Query5Mapper;
 import ar.edu.itba.pod.api.mappers.Query5MapperB;
+import ar.edu.itba.pod.api.reducers.LongSumReducerFactory;
 import ar.edu.itba.pod.api.reducers.Query4ReducerFactory;
-import ar.edu.itba.pod.api.reducers.SumReducerFactoryQuery5;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.ICompletableFuture;
 import com.hazelcast.core.IList;
@@ -54,7 +54,7 @@ public class Query5 extends BasicQuery {
         ICompletableFuture<Map<String, Long>> future = job
                 .mapper(new Query5Mapper(getArguments(ClientArgsNames.COMMON_NAME),
                         getArguments(ClientArgsNames.NEIGHBOURHOOD)))
-                .combiner(new Query5CombinerFactory()).reducer(new SumReducerFactoryQuery5()).submit();
+                .combiner(new LongSumCombiner()).reducer(new LongSumReducerFactory()).submit();
 
         Map<String, Long> rawResult = future.get();
 

@@ -4,7 +4,7 @@ import com.hazelcast.mapreduce.Combiner;
 import com.hazelcast.mapreduce.CombinerFactory;
 import ar.edu.itba.pod.api.Pair;
 
-public class Query2CombinerFactory implements CombinerFactory<Pair<String, String>, Double, Double> {
+public class DoubleSumCombiner implements CombinerFactory<Pair<String, String>, Double, Double> {
     @Override
     public Combiner<Double, Double> newCombiner(Pair<String, String> neighborhoodTreePair) {
         return new Query2Combiner();

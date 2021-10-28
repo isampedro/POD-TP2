@@ -1,9 +1,9 @@
 package ar.edu.itba.pod.client;
 
 import ar.edu.itba.pod.api.Tree;
-import ar.edu.itba.pod.api.combiners.Query2CombinerFactory;
+import ar.edu.itba.pod.api.combiners.DoubleSumCombiner;
 import ar.edu.itba.pod.api.mappers.Query2Mapper;
-import ar.edu.itba.pod.api.reducers.SumReducerFactoryQuery2;
+import ar.edu.itba.pod.api.reducers.DoubleSumReducerFactory;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.ICompletableFuture;
 import com.hazelcast.core.IList;
@@ -51,7 +51,7 @@ public class Query2 extends BasicQuery {
         final Job<String, Tree> job = tracker.newJob(sourceTrees);
         logger.info("String de job: " + job.toString());
         final ICompletableFuture<Map<Pair<String, String>, Double>> future = job.mapper(new Query2Mapper())
-                .combiner(new Query2CombinerFactory()).reducer(new SumReducerFactoryQuery2()).submit();
+                .combiner(new DoubleSumCombiner()).reducer(new DoubleSumReducerFactory()).submit();
 
         final Map<Pair<String, String>, Double> rawResult = future.get();
         final List<String> outLines = postProcess(rawResult);
