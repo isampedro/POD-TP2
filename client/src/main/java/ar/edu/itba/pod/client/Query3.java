@@ -58,8 +58,9 @@ public class Query3 extends BasicQuery {
         logger.info("Lineas finales: " + outLines.size());
         String headers = "NEIGHBOURHOOD;COMMON_NAME_COUNT";
         CsvManager.writeToCSV(getArguments(ClientArgsNames.CSV_OUTPATH), outLines, headers);
-        System.exit(SUCCESS);
+        trees.clear();
         logger.info("Finalizado con éxito");
+        System.exit(SUCCESS);
     }
 
     private static List<String> postProcess(Map<String, Integer> rawResult, int n) {

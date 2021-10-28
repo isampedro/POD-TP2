@@ -48,6 +48,7 @@ public class Query1 extends BasicQuery {
         logger.info("String de source: " + sourceTrees.toString());
         Job<String, Tree> job = tracker.newJob(sourceTrees);
         logger.info("String de job: " + job.toString());
+        logger.info("Inicio de MapReduce");
         ICompletableFuture<Map<String, Long>> future = job.mapper(new Query1Mapper())
                 .combiner(new Query1CombinerFactory()).reducer(new SumReducerFactory()).submit();
 
@@ -57,6 +58,7 @@ public class Query1 extends BasicQuery {
 
         String headers = "neighbourhood;trees";
         CsvManager.writeToCSV(getArguments(ClientArgsNames.CSV_OUTPATH), outLines, headers);
+        trees.clear();
         logger.info("Finalizado con éxito");
         System.exit(SUCCESS);
     }
