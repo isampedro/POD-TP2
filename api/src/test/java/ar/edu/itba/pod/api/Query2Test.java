@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.text.DecimalFormat;
 
 import org.junit.After;
 import org.junit.Test;
@@ -33,13 +34,13 @@ public class Query2Test {
         Hazelcast.shutdownAll();
     }
 
-    private static final Neighborhood neigh1 =new Neighborhood("Capital", 2);
-    private static final Neighborhood neigh2 =new Neighborhood("Ituzaingo", 4);
+    private static final Neighborhood neigh1 =new Neighborhood("Capital", 9);
+    private static final Neighborhood neigh2 =new Neighborhood("Ituzaingo", 2);
 
     private static final List<Tree> trees = Arrays.asList(
             new Tree("a",neigh1, "Gral Wololo"),
             new Tree("a",neigh1, "Gral Wololo"),
-            new Tree("c",neigh1, "Gral Wololo"),
+            new Tree("a",neigh1, "Gral Wololo"),
             new Tree("d",neigh1, "Gral Wololo"),
             new Tree("d",neigh1, "Gral Wololo"),
             new Tree("e",neigh2, "Av jusepe"));
@@ -72,22 +73,31 @@ public class Query2Test {
 
         assertEquals(2, outLines.size());
 
-        assertEquals("11;e;0.5",outLines.get(0));
-        assertEquals("40;a;0.2" , outLines.get(1));
+        assertEquals("Capital;a;0.33",outLines.get(0));
+        assertEquals("Ituzaingo;e;0.50" , outLines.get(1));
 
     }
 
     private static List<String> postProcess(Map<Pair<String,String>, Double> rawResult) {
-        final Map<String, Double> finalMap = new HashMap<>();
-        rawResult.forEach( (k, v) -> finalMap.put( k.toString(), v ));
+        final Map<String, SortedSet<Pair<Double,String>>> finalMap = new HashMap<>();
+        rawResult.forEach( (k, v) -> {
+            finalMap.putIfAbsent(k.fst,new TreeSet<>());
+            finalMap.get(k.fst).add(new Pair<>(v,k.snd));
+        });
 
-        List<Map.Entry<String, Double>> result = finalMap.entrySet().stream()
-                .sorted(Comparator.comparing((Function<Map.Entry<String, Double>, Double>) Map.Entry::getValue)
-                        .thenComparing(Map.Entry::getKey)).collect(Collectors.toList());
+        List<String> orderKeys = finalMap.keySet().stream().sorted().collect(Collectors.toList());
 
-        return result.stream()
-                .map(entry -> entry.getKey() + ";" + entry.getValue())
+
+        return orderKeys.stream()
+                .map(entry -> {
+                    String treeName = finalMap.get(entry).first().snd;
+                    Double value = finalMap.get(entry).first().fst;
+                    DecimalFormat f = new DecimalFormat("0.00");
+
+                    return entry + ";" + treeName + ";" + f.format(value);
+                })
                 .collect(Collectors.toList());
     }
+
 
 }

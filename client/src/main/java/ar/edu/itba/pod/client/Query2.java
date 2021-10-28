@@ -11,6 +11,8 @@ import com.hazelcast.mapreduce.Job;
 import com.hazelcast.mapreduce.JobTracker;
 import com.hazelcast.mapreduce.KeyValueSource;
 import ar.edu.itba.pod.api.Pair;
+
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -49,20 +51,23 @@ public class Query2 extends BasicQuery{
 
     private static List<String> postProcess(Map<Pair<String,String>, Double> rawResult) {
         //TODO: MEJORAR EL CODIGO!!!!!!!!!!
-        final Map<String, Map<String, Double>> finalMap = new TreeMap<>();
+        final Map<String, Map<String, Double>> finalMap = new HashMap<>();
         rawResult.forEach( (k, v) -> {
             Map<String, Double> map = new HashMap<>();
             map.put(k.snd, v);
             finalMap.put(k.fst, map);
         });
 
-        List<Map.Entry<String, Map<String, Double>>> result = new ArrayList<>(finalMap.entrySet());
+        List<String> orderKeys = finalMap.keySet().stream().sorted().collect(Collectors.toList());
 
 
-        return result.stream()
+        return orderKeys.stream()
                 .map(entry -> {
-                    String treeName = (String) entry.getValue().keySet().toArray()[0];
-                    return entry.getKey() + ";" + treeName + ";" + entry.getValue().get(treeName);
+                    String treeName = (String) finalMap.get(entry).keySet().toArray()[0];
+                    Double value = finalMap.get(entry).get(treeName);
+                    DecimalFormat f = new DecimalFormat("##.00");
+
+                    return entry + ";" + treeName + ";" + f.format(value);
                 })
                 .collect(Collectors.toList());
     }
