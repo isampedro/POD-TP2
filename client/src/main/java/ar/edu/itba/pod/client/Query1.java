@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 public class Query1 extends BasicQuery {
 
-    private static final int SUCCESS = 0;
+    private static final int SUCCESS = 0, FAILURE = 1;
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
 
@@ -30,7 +30,7 @@ public class Query1 extends BasicQuery {
 
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
-            return;
+            System.exit(FAILURE);
         }
 
         System.out.println("Antes de todo");
