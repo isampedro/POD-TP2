@@ -1,5 +1,5 @@
 package ar.edu.itba.pod.api;
-/*
+
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
@@ -33,12 +33,16 @@ public class Query4Test {
         Hazelcast.shutdownAll();
     }
 
+    private static final Neighborhood neigh1 =new Neighborhood("Capital", 2);
+    private static final Neighborhood neigh2 =new Neighborhood("Ituzaingo", 4);
+
     private static final List<Tree> trees = Arrays.asList(
-            new Tree("a", new Neighborhood("40", 6), "Gral Wololo"),
-            new Tree("a", new Neighborhood("40", 6), "Gral Wololo"),
-            new Tree("c", new Neighborhood("40", 6), "Gral Wololo"),
-            new Tree("d", new Neighborhood("40", 6), "Gral Wololo"),
-            new Tree("e", new Neighborhood("11", 2), "Av jusepe"));
+            new Tree("a",neigh1, "Gral Wololo"),
+            new Tree("a",neigh1, "Gral Wololo"),
+            new Tree("c",neigh1, "Gral Wololo"),
+            new Tree("d",neigh1, "Gral Wololo"),
+            new Tree("d",neigh1, "Gral Wololo"),
+            new Tree("e",neigh2, "Av jusepe"));
 
     // Pares de barrios que registran la misma cantidad de cientos de especies distintas
     @Test
@@ -100,4 +104,4 @@ public class Query4Test {
                 .sorted()
                 .collect(Collectors.toList());
     }
-} */
+}
