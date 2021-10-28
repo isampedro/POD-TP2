@@ -10,7 +10,7 @@ import java.util.List;
 public class CsvManager {
 
     private static final int COMUNA = 2;
-    private static final int NOMBRE = 7;
+    private static final int NOMBRE = 6;
     private static final int CALLE = 4;
     private static final int BARRIO = 0;
     private static final int POBLACION = 1;
