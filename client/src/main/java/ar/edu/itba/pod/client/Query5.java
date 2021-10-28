@@ -25,10 +25,7 @@ public class Query5 extends BasicQuery {
     private final static Logger logger = LoggerFactory.getLogger(Query5.class);
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
-
-        logger.info("Query 5");
         parseArguments();
-        logger.info("Argumentos parseados");
         try {
             if (commonArgsNull() || getArguments(ClientArgsNames.COMMON_NAME) == null
                     || getArguments(ClientArgsNames.NEIGHBOURHOOD) == null)
@@ -42,15 +39,19 @@ public class Query5 extends BasicQuery {
             System.exit(FAILURE);
         }
 
-        logger.info("Consiguiendo instancia de hazelcast");
-        HazelcastInstance client = getHazelcastInstance();
+        HazelcastInstance client = getHazelcastInstance(logger);
+        logger.info("Data load finished");
+
         final JobTracker tracker = client.getJobTracker("query5");
 
-        IList<Tree> trees = client.getList(HazelcastManager.getTreeNamespace());
+        final IList<Tree> trees = client.getList(HazelcastManager.getTreeNamespace());
+        IMap<String, Long> specieTrees = client.getMap("specie_tree_per_street");
+        logger.info("Data retrieved");
 
         // getting how many trees of the specie there are for each street
         KeyValueSource<String, Tree> sourceTrees = KeyValueSource.fromList(trees);
         Job<String, Tree> job = tracker.newJob(sourceTrees);
+        logger.info("MapReduce Started");
         ICompletableFuture<Map<String, Long>> future = job
                 .mapper(new Query5Mapper(getArguments(ClientArgsNames.COMMON_NAME),
                         getArguments(ClientArgsNames.NEIGHBOURHOOD)))
@@ -58,23 +59,20 @@ public class Query5 extends BasicQuery {
 
         Map<String, Long> rawResult = future.get();
 
-        IMap<String, Long> specieTrees = client.getMap("specie_tree_per_street");
         specieTrees.putAll(rawResult);
         final KeyValueSource<String, Long> sourceSpeciesPerStreet = KeyValueSource.fromMap(specieTrees);
 
         final Job<String, Long> finalJob = tracker.newJob(sourceSpeciesPerStreet);
         final ICompletableFuture<Map<Integer, ArrayList<String>>> finalFuture = finalJob.mapper(new Query5MapperB())
                 .combiner(new Query4CombinerFactory()).reducer(new Query4ReducerFactory()).submit();
-
+        logger.info("MapReduce Finished");
         final Map<Integer, ArrayList<String>> finalRawResult = finalFuture.get();
 
         List<String> outLines = postProcess(finalRawResult);
-        logger.info("Lineas finales: " + outLines.size());
         String headers = "GROUP;STREET A; STREET B";
         CsvManager.writeToCSV(getArguments(ClientArgsNames.CSV_OUTPATH), outLines, headers);
         trees.clear();
         specieTrees.clear();
-        logger.info("Finalizado con éxito");
         System.exit(SUCCESS);
     }
 

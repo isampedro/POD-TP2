@@ -1,7 +1,7 @@
 package ar.edu.itba.pod.client;
 
 import com.hazelcast.core.HazelcastInstance;
-
+import org.slf4j.Logger;
 import java.io.File;
 import java.util.HashMap;
 
@@ -51,9 +51,12 @@ public abstract class BasicQuery {
         return inputNeighborhoodsFound && inputTreesFound;
     }
 
-    public static HazelcastInstance getHazelcastInstance() {
+    public static HazelcastInstance getHazelcastInstance(Logger logger) {
+        logger.info("CSV processing started");
         QueryData data = CsvManager.readCsvData(getArguments(ClientArgsNames.CSV_INPATH),
                 getArguments(ClientArgsNames.CITY));
+        logger.info("CSV processing finished");
+        logger.info("Data load started");
         return HazelcastManager.instanceClient(getArguments(ClientArgsNames.ADDRESSES), data);
     }
 

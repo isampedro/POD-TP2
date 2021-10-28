@@ -24,9 +24,7 @@ public class Query2 extends BasicQuery {
     private final static Logger logger = LoggerFactory.getLogger(Query2.class);
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
-        logger.info("Query 2");
         parseArguments();
-        logger.info("Argumentos parseados");
         try {
             if (commonArgsNull())
                 throw new IllegalArgumentException("Address, in directory and out directory must be specified.");
@@ -39,27 +37,25 @@ public class Query2 extends BasicQuery {
             System.exit(FAILURE);
         }
 
-        logger.info("Consiguiendo instancia de hazelcast");
-        HazelcastInstance client = getHazelcastInstance();
+        HazelcastInstance client = getHazelcastInstance(logger);
+        logger.info("Data load finished");
         final JobTracker tracker = client.getJobTracker("query2");
 
         // We get all the trees and neighbourhoods
         final IList<Tree> trees = client.getList(HazelcastManager.getTreeNamespace());
-        logger.info("Arboles: " + trees.size());
+        logger.info("Data retrieved");
+
         final KeyValueSource<String, Tree> sourceTrees = KeyValueSource.fromList(trees);
-        logger.info("String de source: " + sourceTrees.toString());
         final Job<String, Tree> job = tracker.newJob(sourceTrees);
-        logger.info("String de job: " + job.toString());
+        logger.info("MapReduce Started");
         final ICompletableFuture<Map<Pair<String, String>, Double>> future = job.mapper(new Query2Mapper())
                 .combiner(new Query2CombinerFactory()).reducer(new SumReducerFactoryQuery2()).submit();
-
+        logger.info("MapReduce Finished");
         final Map<Pair<String, String>, Double> rawResult = future.get();
         final List<String> outLines = postProcess(rawResult);
-        logger.info("Lineas finales: " + outLines.size());
         String headers = "NEIGHBOURHOOD;COMMON_NAME;TREES_PER_PEOPLE";
         CsvManager.writeToCSV(getArguments(ClientArgsNames.CSV_OUTPATH), outLines, headers);
         trees.clear();
-        logger.info("Finalizado con éxito");
         System.exit(SUCCESS);
     }
 

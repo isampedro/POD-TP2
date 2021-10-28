@@ -23,9 +23,7 @@ public class Query3 extends BasicQuery {
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
 
-        logger.info("Query 3");
         parseArguments();
-        logger.info("Argumentos parseados");
         try {
             if (commonArgsNull() || getArguments(ClientArgsNames.N) == null)
                 throw new IllegalArgumentException("Address, N, in directory and out directory must be specified.");
@@ -41,25 +39,26 @@ public class Query3 extends BasicQuery {
             System.exit(FAILURE);
         }
 
-        logger.info("Consiguiendo instancia de hazelcast");
-        HazelcastInstance client = getHazelcastInstance();
+        HazelcastInstance client = getHazelcastInstance(logger);
+        logger.info("Data load finished");
+
         final JobTracker tracker = client.getJobTracker("query3");
 
         // We get all the trees and neighbourhoods
         final IList<Tree> trees = client.getList(HazelcastManager.getTreeNamespace());
+        logger.info("Data retrieved");
 
         final KeyValueSource<String, Tree> sourceTrees = KeyValueSource.fromList(trees);
         final Job<String, Tree> job = tracker.newJob(sourceTrees);
+        logger.info("MapReduce Started");
         final ICompletableFuture<Map<String, Integer>> future = job.mapper(new Query3Mapper())
                 .combiner(new Query3CombinerFactory()).reducer(new Query3ReducerFactory()).submit();
-
+        logger.info("MapReduce Finished");
         final Map<String, Integer> rawResult = future.get();
         final List<String> outLines = postProcess(rawResult, Integer.parseInt(getArguments(ClientArgsNames.N)));
-        logger.info("Lineas finales: " + outLines.size());
         String headers = "NEIGHBOURHOOD;COMMON_NAME_COUNT";
         CsvManager.writeToCSV(getArguments(ClientArgsNames.CSV_OUTPATH), outLines, headers);
         trees.clear();
-        logger.info("Finalizado con éxito");
         System.exit(SUCCESS);
     }
 

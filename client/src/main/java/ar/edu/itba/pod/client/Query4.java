@@ -25,10 +25,7 @@ public class Query4 extends BasicQuery {
     private final static Logger logger = LoggerFactory.getLogger(Query4.class);
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
-
-        logger.info("Query 4");
         parseArguments();
-        logger.info("Argumentos parseados");
         try {
             if (commonArgsNull())
                 throw new IllegalArgumentException("Address, in directory and out directory must be specified.");
@@ -41,37 +38,38 @@ public class Query4 extends BasicQuery {
             System.exit(FAILURE);
         }
 
-        logger.info("Consiguiendo instancia de hazelcast");
-        HazelcastInstance client = getHazelcastInstance();
+        HazelcastInstance client = getHazelcastInstance(logger);
+        logger.info("Data load finished");
+
         final JobTracker tracker = client.getJobTracker("query4");
 
         final IList<Tree> trees = client.getList(HazelcastManager.getTreeNamespace());
+        final IMap<String, Integer> differentSpecies = client.getMap("trees_species_per_neighborhood");
+        logger.info("Data retrieved");
 
         // Get neighborhoods with their different tree species
         final KeyValueSource<String, Tree> sourceTrees = KeyValueSource.fromList(trees);
 
         final Job<String, Tree> job = tracker.newJob(sourceTrees);
+        logger.info("MapReduce Started");
         final ICompletableFuture<Map<String, Integer>> future = job.mapper(new Query3Mapper())
                 .combiner(new Query3CombinerFactory()).reducer(new Query3ReducerFactory()).submit();
 
         final Map<String, Integer> rawResult = future.get();
 
-        IMap<String, Integer> differentSpecies = client.getMap("trees_species_per_neighborhood");
         differentSpecies.putAll(rawResult);
         final KeyValueSource<String, Integer> sourceSpeciesPerNeighborhood = KeyValueSource.fromMap(differentSpecies);
 
         final Job<String, Integer> finalJob = tracker.newJob(sourceSpeciesPerNeighborhood);
         final ICompletableFuture<Map<Integer, ArrayList<String>>> finalFuture = finalJob.mapper(new Query4Mapper())
                 .combiner(new Query4CombinerFactory()).reducer(new Query4ReducerFactory()).submit();
-
+        logger.info("MapReduce Finished");
         final Map<Integer, ArrayList<String>> finalRawResult = finalFuture.get();
         final List<String> outLines = postProcess(finalRawResult);
-        logger.info("Lineas finales: " + outLines.size());
         String headers = "GROUP;NEIGHBOURHOOD A;NEIGHBOURHOOD B";
         CsvManager.writeToCSV(getArguments(ClientArgsNames.CSV_OUTPATH), outLines, headers);
         trees.clear();
         differentSpecies.clear();
-        logger.info("Finalizado con éxito");
         System.exit(SUCCESS);
     }
 

@@ -22,10 +22,7 @@ public class Query1 extends BasicQuery {
     private final static Logger logger = LoggerFactory.getLogger(Query1.class);
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
-
-        logger.info("Query 1");
         parseArguments();
-        logger.info("Argumentos parseados");
         try {
             if (commonArgsNull())
                 throw new IllegalArgumentException("Address, in directory and out directory must be specified.");
@@ -38,28 +35,25 @@ public class Query1 extends BasicQuery {
             System.exit(FAILURE);
         }
 
-        logger.info("Consiguiendo instancia de hazelcast");
-        HazelcastInstance client = getHazelcastInstance();
+        HazelcastInstance client = getHazelcastInstance(logger);
+        logger.info("Data load finished");
         final JobTracker tracker = client.getJobTracker("query1");
 
         IList<Tree> trees = client.getList(HazelcastManager.getTreeNamespace());
-        logger.info("Arboles: " + trees.size());
+        logger.info("Data retrieved");
+
         KeyValueSource<String, Tree> sourceTrees = KeyValueSource.fromList(trees);
-        logger.info("String de source: " + sourceTrees.toString());
         Job<String, Tree> job = tracker.newJob(sourceTrees);
-        logger.info("String de job: " + job.toString());
-        logger.info("Inicio de MapReduce");
+        logger.info("MapReduce Started");
         ICompletableFuture<Map<String, Long>> future = job.mapper(new Query1Mapper())
                 .combiner(new Query1CombinerFactory()).reducer(new SumReducerFactory()).submit();
-
+        logger.info("MapReduce Finished");
         Map<String, Long> rawResult = future.get();
         List<String> outLines = postProcess(rawResult);
-        logger.info("Lineas finales: " + outLines.size());
 
         String headers = "neighbourhood;trees";
         CsvManager.writeToCSV(getArguments(ClientArgsNames.CSV_OUTPATH), outLines, headers);
         trees.clear();
-        logger.info("Finalizado con éxito");
         System.exit(SUCCESS);
     }
 
