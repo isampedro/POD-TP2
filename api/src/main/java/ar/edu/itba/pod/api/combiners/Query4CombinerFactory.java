@@ -35,7 +35,8 @@ public class Query4CombinerFactory implements CombinerFactory<Integer, String, P
 
         @Override
         public Pair<Integer, ArrayList<String>> finalizeChunk() {
-            return new Pair<>(this.number, this.neighborhoods);
+            int num = this.number;
+            return new Pair<>(num, new ArrayList<>(this.neighborhoods));
         }
     }
 }

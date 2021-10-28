@@ -46,7 +46,7 @@ public class Query5Test {
             new Tree("d",neigh1, "Gral Wololo"),
             new Tree("e",neigh2, "Av jusepe"));
 
-    // Top n barrios con mayor cantidad de especies distintas
+    // Pares de calles de un barrio X que registran la misma cantidad de decenas de árboles de una especie Y
     @Test
     public void query5Test() throws InterruptedException, ExecutionException {
 
