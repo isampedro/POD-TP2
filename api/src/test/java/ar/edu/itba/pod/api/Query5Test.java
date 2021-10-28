@@ -32,15 +32,15 @@ public class Query5Test {
         Hazelcast.shutdownAll();
     }
 
-    private static final String COMMON_NAME = "2";
-    private static final String NEIGHBOURHOOD = "2";
+    private static final String COMMON_NAME = "luca";
+    private static final String NEIGHBOURHOOD = "Capital";
 
     private static final Neighborhood neigh1 =new Neighborhood("Capital", 2);
     private static final Neighborhood neigh2 =new Neighborhood("Ituzaingo", 4);
 
     private static final List<Tree> trees = Arrays.asList(
             new Tree("a",neigh1, "Gral Wololo"),
-            new Tree("a",neigh1, "Gral Wololo"),
+            new Tree("luca",neigh1, "Gral Wololo"),
             new Tree("c",neigh1, "Gral Wololo"),
             new Tree("d",neigh1, "Gral Wololo"),
             new Tree("d",neigh1, "Gral Wololo"),
@@ -54,6 +54,17 @@ public class Query5Test {
 
         IList<Tree> iTrees = h.getList("treeTEST");
         iTrees.addAll(trees);
+
+        for (int i = 0; i < 25; i++)
+            iTrees.add(new Tree("luca" ,neigh1, "Gral Wololo"));
+        for (int i = 0; i < 24; i++)
+            iTrees.add(new Tree("luca" ,neigh1, "Cpt wolo"));
+        for (int i = 0; i < 12; i++)
+            iTrees.add(new Tree("luca" ,neigh1, "Bcalle de luca"));
+        for (int i = 0; i < 13; i++)
+            iTrees.add(new Tree("luca" ,neigh1, "Acalle ale"));
+        for (int i = 0; i < 10; i++)
+            iTrees.add(new Tree("luca" ,neigh1, "Ccalle de pepe"));
 
         final JobTracker tracker = h.getJobTracker("query5");
 
@@ -85,7 +96,8 @@ public class Query5Test {
 
         List<String> outLines = postProcess(finalRawResult, COMMON_NAME);
 
-        //assertEquals(2, outLines.size());
+        outLines.forEach(System.out::println);
+    //assertEquals(2, outLines.size());
 
 
         //assertEquals("11;1",outLines.get(0));
@@ -93,18 +105,17 @@ public class Query5Test {
 
     }
     private static List<String> postProcess( final Map<Integer, ArrayList<String>> rawResult, String commonName ) {
-        final List<String> streetPairs = new LinkedList<>();
-        rawResult.forEach((ten, streets) -> {
-            for(int i = 0; i < streets.size(); i++) {
-                for(int j = i + 1; j < streets.size(); j++) {
-                    streetPairs.add(ten + ";" + streets.get(i) + ";" + streets.get(j));
+        final List<Integer> tens = new ArrayList<>(rawResult.keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList()));
+        final List<String> streetPairs = new ArrayList<>();
+        tens.forEach(t-> {
+            List<String> streets = rawResult.get(t).stream().sorted().collect(Collectors.toList());
+            for (int i = 0; i < streets.size(); i++) {
+                for (int j = i + 1; j < streets.size(); j++) {
+                    streetPairs.add(t + ";" + streets.get(i) + ";" + streets.get(j));
                 }
             }
         });
-
-        return streetPairs.stream()
-                .sorted()
-                .collect(Collectors.toList());
+        return streetPairs;
     }
 
 }

@@ -10,9 +10,8 @@ import com.hazelcast.core.IList;
 import com.hazelcast.mapreduce.Job;
 import com.hazelcast.mapreduce.JobTracker;
 import com.hazelcast.mapreduce.KeyValueSource;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -52,15 +51,36 @@ public class Query3 extends BasicQuery{
 
     }
 
-    // TODO: que de todo esto se puede pasar a un collator
     private static List<String> postProcess(Map<String, Integer> rawResult, int n) {
-        List<Map.Entry<String, Integer>> result = rawResult.entrySet().stream()
-                .sorted(Comparator.comparing((Function<Map.Entry<String, Integer>, Integer>) Map.Entry::getValue)
-                        .thenComparing(Map.Entry::getKey)).collect(Collectors.toList()).subList(0, n-1);
 
-        return result.stream()
-                .map(entry -> entry.getKey() + ";" + entry.getValue())
-                .collect(Collectors.toList());
+        Map<String, Integer> result = sortByValue(rawResult);
+        List<String> l = new ArrayList<>(result.keySet());
+
+        return l.stream()
+                .map(entry -> entry + ";" + result.get(entry))
+                .collect(Collectors.toList()).subList(0, n);
+    }
+
+    public static Map<String, Integer> sortByValue(Map<String, Integer> hm)
+    {
+        // Create a list from elements of HashMap
+        List<Map.Entry<String, Integer> > list =
+                new LinkedList<>(hm.entrySet());
+
+        // Sort the list
+        list.sort(new Comparator<Map.Entry<String, Integer>>() {
+            public int compare(Map.Entry<String, Integer> o1,
+                               Map.Entry<String, Integer> o2) {
+                return (o2.getValue()).compareTo(o1.getValue());
+            }
+        });
+
+        // put data from sorted list to hashmap
+        HashMap<String, Integer> temp = new LinkedHashMap<>();
+        for (Map.Entry<String, Integer> aa : list) {
+            temp.put(aa.getKey(), aa.getValue());
+        }
+        return temp;
     }
 
     private static IList<Tree> preProcessTrees(IList<Tree> trees) {
