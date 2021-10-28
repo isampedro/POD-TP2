@@ -1,5 +1,6 @@
 package ar.edu.itba.pod.api;
 
+import java.text.DecimalFormatSymbols;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
@@ -27,6 +28,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
+
 public class Query2Test {
 
     @After
@@ -40,7 +42,7 @@ public class Query2Test {
     private static final List<Tree> trees = Arrays.asList(
             new Tree("a",neigh1, "Gral Wololo"),
             new Tree("a",neigh1, "Gral Wololo"),
-            new Tree("a",neigh1, "Gral Wololo"),
+            new Tree("e",neigh1, "Gral Wololo"),
             new Tree("d",neigh1, "Gral Wololo"),
             new Tree("d",neigh1, "Gral Wololo"),
             new Tree("e",neigh2, "Av jusepe"));
@@ -73,7 +75,7 @@ public class Query2Test {
 
         assertEquals(2, outLines.size());
 
-        assertEquals("Capital;a;0.33",outLines.get(0));
+        assertEquals("Capital;a;0.22",outLines.get(0));
         assertEquals("Ituzaingo;e;0.50" , outLines.get(1));
 
     }
@@ -81,7 +83,7 @@ public class Query2Test {
     private static List<String> postProcess(Map<Pair<String,String>, Double> rawResult) {
         final Map<String, SortedSet<Pair<Double,String>>> finalMap = new HashMap<>();
         rawResult.forEach( (k, v) -> {
-            finalMap.putIfAbsent(k.fst,new TreeSet<>());
+            finalMap.putIfAbsent(k.fst,new TreeSet<>(Comparator.reverseOrder()));
             finalMap.get(k.fst).add(new Pair<>(v,k.snd));
         });
 
@@ -92,7 +94,7 @@ public class Query2Test {
                 .map(entry -> {
                     String treeName = finalMap.get(entry).first().snd;
                     Double value = finalMap.get(entry).first().fst;
-                    DecimalFormat f = new DecimalFormat("0.00");
+                    DecimalFormat f = new DecimalFormat("0.00", DecimalFormatSymbols.getInstance(Locale.US));
 
                     return entry + ";" + treeName + ";" + f.format(value);
                 })

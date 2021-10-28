@@ -13,6 +13,7 @@ import com.hazelcast.mapreduce.KeyValueSource;
 import ar.edu.itba.pod.api.Pair;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -50,12 +51,10 @@ public class Query2 extends BasicQuery{
     }
 
     private static List<String> postProcess(Map<Pair<String,String>, Double> rawResult) {
-        //TODO: MEJORAR EL CODIGO!!!!!!!!!!
-        final Map<String, Map<String, Double>> finalMap = new HashMap<>();
+        final Map<String, SortedSet<Pair<Double,String>>> finalMap = new HashMap<>();
         rawResult.forEach( (k, v) -> {
-            Map<String, Double> map = new HashMap<>();
-            map.put(k.snd, v);
-            finalMap.put(k.fst, map);
+            finalMap.putIfAbsent(k.fst,new TreeSet<>(Comparator.reverseOrder()));
+            finalMap.get(k.fst).add(new Pair<>(v,k.snd));
         });
 
         List<String> orderKeys = finalMap.keySet().stream().sorted().collect(Collectors.toList());
@@ -63,21 +62,12 @@ public class Query2 extends BasicQuery{
 
         return orderKeys.stream()
                 .map(entry -> {
-                    String treeName = (String) finalMap.get(entry).keySet().toArray()[0];
-                    Double value = finalMap.get(entry).get(treeName);
-                    DecimalFormat f = new DecimalFormat("##.00");
+                    String treeName = finalMap.get(entry).first().snd;
+                    Double value = finalMap.get(entry).first().fst;
+                    DecimalFormat f = new DecimalFormat("0.00", DecimalFormatSymbols.getInstance(Locale.US));
 
                     return entry + ";" + treeName + ";" + f.format(value);
                 })
                 .collect(Collectors.toList());
-    }
-
-    private static IList<Tree> preProcessTrees(IList<Tree> trees) {
-        // que solo lleguen aquellos arboles que tienen barrio listado en barrios a los mapper
-        trees.forEach(tree -> {
-            if(tree.getNeighborhood().getPopulation() == 0)
-                trees.remove(tree);
-        });
-        return trees;
     }
 }

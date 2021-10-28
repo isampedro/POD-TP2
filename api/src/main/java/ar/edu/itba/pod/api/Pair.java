@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 
-public class Pair<A extends Serializable & Comparable<A>, B extends Serializable> implements Comparable<A>, Serializable {
+public class Pair<A extends Serializable & Comparable<A>, B extends Serializable> implements Comparable <Pair<A,B>>, Serializable {
 
     public A fst;
     public B snd;
@@ -40,7 +40,7 @@ public class Pair<A extends Serializable & Comparable<A>, B extends Serializable
     }
 
     @Override
-    public int compareTo(A a) {
-        return this.fst.compareTo(a);
+    public int compareTo(Pair<A, B> o) {
+        return this.fst.compareTo(o.fst);
     }
 }
