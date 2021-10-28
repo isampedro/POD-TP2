@@ -9,11 +9,12 @@ import java.util.List;
 
 public class CsvManager {
 
-    private static final int COMUNA = 4;
-    private static final int NOMBRE = 11;
-    private static final int CALLE = 6;
+    private static final int COMUNA = 2;
+    private static final int NOMBRE = 7;
+    private static final int CALLE = 4;
     private static final int BARRIO = 0;
     private static final int POBLACION = 1;
+    private static final String SEPARATOR = ";";
 
     public static void writeToCSV(String outPath, List<String> results, String headers) {
         results.add(0, headers);
@@ -64,7 +65,7 @@ public class CsvManager {
                 if (title) {
                     title = false;
                 } else {
-                    lineArgs = line.split(";");
+                    lineArgs = line.split(SEPARATOR);
                     final String neighborhoodName = lineArgs[COMUNA];
                     trees.add(new Tree(lineArgs[NOMBRE],
                             neighborhoods.stream().filter(n -> n.getName().equals(neighborhoodName)).findAny()
@@ -100,7 +101,7 @@ public class CsvManager {
                 if (title) {
                     title = false;
                 } else {
-                    lineArgs = line.split(";");
+                    lineArgs = line.split(SEPARATOR);
                     neighborhoods.add(new Neighborhood(lineArgs[BARRIO], Long.parseLong(lineArgs[POBLACION])));
                 }
             }
