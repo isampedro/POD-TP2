@@ -33,22 +33,30 @@ public class Query4Test {
         Hazelcast.shutdownAll();
     }
 
-    private static final Neighborhood neigh1 =new Neighborhood("Capital", 2);
-    private static final Neighborhood neigh2 =new Neighborhood("Ituzaingo", 4);
+    private static final Neighborhood neigh1 = new Neighborhood("Capital", 2);
+    private static final Neighborhood neigh2 = new Neighborhood("Ituzaingo", 4);
+    private static final Neighborhood neigh3 = new Neighborhood("Nuñes", 4);
+    private static final Neighborhood neigh4 = new Neighborhood("Caballito", 4);
+    private static final Neighborhood neigh5 = new Neighborhood("Boca", 4);
+
+
 
     private static final List<Tree> trees = Arrays.asList(
-            new Tree("a",neigh1, "Gral Wololo"),
-            new Tree("a",neigh1, "Gral Wololo"),
-            new Tree("c",neigh1, "Gral Wololo"),
-            new Tree("d",neigh1, "Gral Wololo"),
-            new Tree("d",neigh1, "Gral Wololo"),
-            new Tree("e",neigh2, "Av jusepe"));
+            new Tree("a", neigh1, "Gral Wololo"),
+            new Tree("a", neigh1, "Gral Wololo"),
+            new Tree("c", neigh1, "Gral Wololo"),
+            new Tree("d", neigh1, "Gral Wololo"),
+            new Tree("d", neigh1, "Gral Wololo"),
+            new Tree("e", neigh2, "Av jusepe"),
+            new Tree("e", neigh3, "Av jusepeSuelas"),
+            new Tree("e", neigh4, "Av jusepeSuelas"),
+            new Tree("e", neigh5, "Av jusepeSuelasBoca"));
+
 
 
     // Pares de barrios que registran la misma cantidad de cientos de especies distintas
     @Test
     public void query4Test() throws InterruptedException, ExecutionException {
-
 
 
         HazelcastInstance h = Hazelcast.newHazelcastInstance();
@@ -57,9 +65,9 @@ public class Query4Test {
         iTrees.addAll(trees);
 
         for (int i = 0; i < 123; i++)
-            iTrees.add(new Tree(String.valueOf(i) ,neigh1, "Gral Wololo"));
+            iTrees.add(new Tree(String.valueOf(i), neigh1, "Gral Wololo"));
         for (int i = 0; i < 100; i++)
-            iTrees.add(new Tree(String.valueOf(i) ,neigh2, "Cpt wolo"));
+            iTrees.add(new Tree(String.valueOf(i), neigh2, "Cpt wolo"));
 
         final JobTracker tracker = h.getJobTracker("query4");
 
@@ -91,26 +99,27 @@ public class Query4Test {
         final Map<Integer, ArrayList<String>> finalRawResult = finalFuture.get();
         final List<String> outLines = postProcess(finalRawResult);
 
-//        assertEquals(2, outLines.size());
 
-        System.out.println(outLines);
-        //assertEquals("11;1",outLines.get(0));
-        //assertEquals("40;4", outLines.get(1));
+        outLines.forEach(System.out::println);
+
+        assertEquals(1,outLines.size());
+        assertEquals("100;Capital;Ituzaingo", outLines.get(0));
 
     }
 
     private static List<String> postProcess(Map<Integer, ArrayList<String>> rawResult) {
-        final List<String> neighborhoodPairs = new LinkedList<>();
-        rawResult.forEach((hundred, neighborhoods) -> {
-            for(int i = 0; i < neighborhoods.size(); i++) {
-                for(int j = i + 1; j < neighborhoods.size(); j++) {
-                    neighborhoodPairs.add(hundred + ";" + neighborhoods.get(i) + ";" + neighborhoods.get(j));
+
+        final List<Integer> hundreds = new ArrayList<>(rawResult.keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList()));
+        final List<String> neighborPairs = new ArrayList<>();
+        hundreds.forEach(t -> {
+            List<String> streets = rawResult.get(t).stream().sorted().collect(Collectors.toList());
+            for (int i = 0; i < streets.size(); i++) {
+                for (int j = i + 1; j < streets.size(); j++) {
+                    neighborPairs.add(t + ";" + streets.get(i) + ";" + streets.get(j));
                 }
             }
         });
+        return neighborPairs;
 
-        return neighborhoodPairs.stream()
-                .sorted()
-                .collect(Collectors.toList());
     }
 }

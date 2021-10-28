@@ -79,11 +79,9 @@ public class Query3Test {
 
         System.out.println(outLines);
 
-     //   assertEquals(2, outLines.size());
 
-
-    //    assertEquals("11;1",outLines.get(0));
-  //      assertEquals("40;4", outLines.get(1));
+        assertEquals("Capital;5",outLines.get(0));
+        assertEquals("Nuñez;3", outLines.get(1));
 
     }
     private static List<String> postProcess(Map<String, Integer> rawResult, int n) {

@@ -73,7 +73,6 @@ public class Query2Test {
 
         System.out.println(outLines);
 
-        assertEquals(2, outLines.size());
 
         assertEquals("Capital;a;0.22",outLines.get(0));
         assertEquals("Ituzaingo;e;0.50" , outLines.get(1));

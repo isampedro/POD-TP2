@@ -42,8 +42,8 @@ public class Query5Test {
             new Tree("a",neigh1, "Gral Wololo"),
             new Tree("luca",neigh1, "Gral Wololo"),
             new Tree("c",neigh1, "Gral Wololo"),
-            new Tree("d",neigh1, "Gral Wololo"),
-            new Tree("d",neigh1, "Gral Wololo"),
+            new Tree("luca",neigh1, "Ale el grande"),
+            new Tree("luca",neigh1, "Ale el mejor"),
             new Tree("e",neigh2, "Av jusepe"));
 
     // Pares de calles de un barrio X que registran la misma cantidad de decenas de árboles de una especie Y
@@ -80,6 +80,8 @@ public class Query5Test {
 
         Map<String, Long> rawResult = future.get();
 
+        System.out.println(rawResult);
+
         IMap<String, Long> specieTrees = h.getMap("specie_tree_per_streetTESTS");
         specieTrees.putAll(rawResult);
         final KeyValueSource<String, Long> sourceSpeciesPerStreet = KeyValueSource.fromMap(specieTrees);
@@ -94,17 +96,20 @@ public class Query5Test {
 
         final Map<Integer, ArrayList<String>> finalRawResult = finalFuture.get();
 
-        List<String> outLines = postProcess(finalRawResult, COMMON_NAME);
+        List<String> outLines = postProcess(finalRawResult);
 
         outLines.forEach(System.out::println);
-    //assertEquals(2, outLines.size());
 
 
-        //assertEquals("11;1",outLines.get(0));
-        //assertEquals("40;4", outLines.get(1));
+        assertEquals(4,outLines.size());
+
+        assertEquals("20;Cpt wolo;Gral Wololo",outLines.get(0));
+        assertEquals("10;Acalle ale;Bcalle de luca", outLines.get(1));
+        assertEquals("10;Acalle ale;Bcalle de luca", outLines.get(1));
+        assertEquals("10;Acalle ale;Bcalle de luca", outLines.get(1));
 
     }
-    private static List<String> postProcess( final Map<Integer, ArrayList<String>> rawResult, String commonName ) {
+    private static List<String> postProcess( final Map<Integer, ArrayList<String>> rawResult) {
         final List<Integer> tens = new ArrayList<>(rawResult.keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList()));
         final List<String> streetPairs = new ArrayList<>();
         tens.forEach(t-> {

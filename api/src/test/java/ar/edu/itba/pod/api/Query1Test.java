@@ -66,7 +66,6 @@ public class Query1Test {
         Map<String, Long> rawResult = future.get();
         List<String> outLines = postProcess(rawResult);
 
-        assertEquals(2, outLines.size());
 
 
         assertEquals("11;1",outLines.get(0));
