@@ -27,13 +27,16 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class Query5 extends BasicQuery{
+public class Query5 extends BasicQuery {
+    private static final int SUCCESS = 0;
+
     public static void main(String[] args) throws ExecutionException, InterruptedException {
 
         parseArguments();
 
         try {
-            if (commonArgsNull() || getArguments(ClientArgsNames.COMMON_NAME) == null || getArguments(ClientArgsNames.NEIGHBOURHOOD) == null)
+            if (commonArgsNull() || getArguments(ClientArgsNames.COMMON_NAME) == null
+                    || getArguments(ClientArgsNames.NEIGHBOURHOOD) == null)
                 throw new IllegalArgumentException("Address, in directory and out directory must be specified.");
 
         } catch (IllegalArgumentException e) {
@@ -46,14 +49,13 @@ public class Query5 extends BasicQuery{
 
         IList<Tree> trees = preProcessTrees(client.getList(HazelcastManager.getTreeNamespace()));
 
-        //getting how many trees of the specie there are for each street
+        // getting how many trees of the specie there are for each street
         KeyValueSource<String, Tree> sourceTrees = KeyValueSource.fromList(trees);
         Job<String, Tree> job = tracker.newJob(sourceTrees);
         ICompletableFuture<Map<String, Long>> future = job
-                .mapper(new Query5Mapper(getArguments(ClientArgsNames.COMMON_NAME), getArguments(ClientArgsNames.NEIGHBOURHOOD)))
-                .combiner(new Query5CombinerFactory())
-                .reducer(new SumReducerFactoryQuery5())
-                .submit();
+                .mapper(new Query5Mapper(getArguments(ClientArgsNames.COMMON_NAME),
+                        getArguments(ClientArgsNames.NEIGHBOURHOOD)))
+                .combiner(new Query5CombinerFactory()).reducer(new SumReducerFactoryQuery5()).submit();
 
         Map<String, Long> rawResult = future.get();
 
@@ -61,13 +63,9 @@ public class Query5 extends BasicQuery{
         specieTrees.putAll(rawResult);
         final KeyValueSource<String, Long> sourceSpeciesPerStreet = KeyValueSource.fromMap(specieTrees);
 
-
         final Job<String, Long> finalJob = tracker.newJob(sourceSpeciesPerStreet);
-        final ICompletableFuture<Map<Integer, ArrayList<String>>> finalFuture = finalJob
-                .mapper(new Query5MapperB())
-                .combiner(new Query4CombinerFactory())
-                .reducer(new Query4ReducerFactory())
-                .submit();
+        final ICompletableFuture<Map<Integer, ArrayList<String>>> finalFuture = finalJob.mapper(new Query5MapperB())
+                .combiner(new Query4CombinerFactory()).reducer(new Query4ReducerFactory()).submit();
 
         final Map<Integer, ArrayList<String>> finalRawResult = finalFuture.get();
 
@@ -75,27 +73,27 @@ public class Query5 extends BasicQuery{
 
         String headers = "GROUP;STREET A; STREET B";
         CsvManager.writeToCSV(getArguments(ClientArgsNames.CSV_OUTPATH), outLines, headers);
+        System.exit(SUCCESS);
     }
 
-    private static List<String> postProcess( final Map<Integer, ArrayList<String>> rawResult, String commonName ) {
+    private static List<String> postProcess(final Map<Integer, ArrayList<String>> rawResult, String commonName) {
         final List<String> streetPairs = new LinkedList<>();
         rawResult.forEach((ten, streets) -> {
-            for(int i = 0; i < streets.size(); i++) {
-                for(int j = i + 1; j < streets.size(); j++) {
+            for (int i = 0; i < streets.size(); i++) {
+                for (int j = i + 1; j < streets.size(); j++) {
                     streetPairs.add(ten + ";" + streets.get(i) + ";" + streets.get(j));
                 }
             }
         });
 
-        return streetPairs.stream()
-                .sorted()
-                .collect(Collectors.toList());
+        return streetPairs.stream().sorted().collect(Collectors.toList());
     }
 
     private static IList<Tree> preProcessTrees(IList<Tree> trees) {
-        // que solo lleguen aquellos arboles que tienen barrio listado en barrios a los mapper
+        // que solo lleguen aquellos arboles que tienen barrio listado en barrios a los
+        // mapper
         trees.forEach(tree -> {
-            if(tree.getNeighborhood().getPopulation() == 0 )
+            if (tree.getNeighborhood().getPopulation() == 0)
                 trees.remove(tree);
         });
         return trees;
