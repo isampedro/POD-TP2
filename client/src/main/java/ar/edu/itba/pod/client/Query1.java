@@ -26,7 +26,9 @@ public class Query1 extends BasicQuery {
         try {
             if (commonArgsNull())
                 throw new IllegalArgumentException("Address, in directory and out directory must be specified.");
-            commonArgsOK();
+            if (!commonArgsOK()) {
+                throw new IllegalArgumentException("City, inPath and outPath must be correctly spelled.");
+            }
 
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());

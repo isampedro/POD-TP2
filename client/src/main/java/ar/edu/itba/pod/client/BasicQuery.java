@@ -34,23 +34,21 @@ public abstract class BasicQuery {
         File inputFolder = new File(getArguments(ClientArgsNames.CSV_INPATH));
         File[] inputFolderFiles = inputFolder.listFiles();
 
-        boolean addressesMatches = false, inputFound = false;
+        boolean inputTreesFound = false, inputNeighborhoodsFound = false;
 
         for (int i = 0; i < inputFolderFiles.length; i++) {
             if (inputFolderFiles[i].getName()
                     .equals(FileTypes.TREES.getFileType() + getArguments(ClientArgsNames.CITY) + ".csv"))
-                inputFound = true;
-
+                inputTreesFound = true;
+            if (inputFolderFiles[i].getName()
+                    .equals(FileTypes.NEIGHBOURHOODS.getFileType() + getArguments(ClientArgsNames.CITY) + ".csv"))
+                inputNeighborhoodsFound = true;
         }
 
-        addressesMatches = getArguments(ClientArgsNames.ADDRESSES).matches(
-                "^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]):(?:6553[0-5]|655[0-2][0-9]|65[0-4][0-9]{2}|6[0-4][0-9]{3}|[1-5][0-9]{4}|[1-9][0-9]{1,3}|[0-9])");
+        // addressesMatches = getArguments(ClientArgsNames.ADDRESSES).matches(
+        // "^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]):(?:6553[0-5]|655[0-2][0-9]|65[0-4][0-9]{2}|6[0-4][0-9]{3}|[1-5][0-9]{4}|[1-9][0-9]{1,3}|[0-9])");
 
-        if (addressesMatches && inputFound) {
-            System.out.println("la concha. venimos bien");
-        }
-
-        return inputFound && addressesMatches;
+        return inputNeighborhoodsFound && inputTreesFound;
     }
 
     public static HazelcastInstance getHazelcastInstance() {

@@ -30,7 +30,9 @@ public class Query5 extends BasicQuery {
             if (commonArgsNull() || getArguments(ClientArgsNames.COMMON_NAME) == null
                     || getArguments(ClientArgsNames.NEIGHBOURHOOD) == null)
                 throw new IllegalArgumentException("Address, in directory and out directory must be specified.");
-
+            if (!commonArgsOK()) {
+                throw new IllegalArgumentException("City, inPath and outPath must be correctly spelled.");
+            }
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
             System.exit(FAILURE);
