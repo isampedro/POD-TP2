@@ -1,6 +1,7 @@
 package ar.edu.itba.pod.client;
 
 import ar.edu.itba.pod.api.Tree;
+import ar.edu.itba.pod.api.collators.Query1Collator;
 import ar.edu.itba.pod.api.combiners.LongSumCombiner;
 import ar.edu.itba.pod.api.mappers.Query1Mapper;
 import ar.edu.itba.pod.api.reducers.LongSumReducerFactory;
@@ -45,14 +46,15 @@ public class Query1 extends BasicQuery {
         KeyValueSource<String, Tree> sourceTrees = KeyValueSource.fromList(trees);
         Job<String, Tree> job = tracker.newJob(sourceTrees);
         logger.info("MapReduce Started");
-        ICompletableFuture<Map<String, Long>> future = job.mapper(new Query1Mapper())
-                .combiner(new LongSumCombiner()).reducer(new LongSumReducerFactory()).submit();
+        ICompletableFuture<List<String>> future = job.mapper(new Query1Mapper())
+                .combiner(new LongSumCombiner()).reducer(new LongSumReducerFactory())
+                .submit(new Query1Collator<>());
         logger.info("MapReduce Finished");
-        Map<String, Long> rawResult = future.get();
-        List<String> outLines = postProcess(rawResult);
+        List<String> rawResult = future.get();
+        //List<String> outLines = postProcess(rawResult);
 
         String headers = "neighbourhood;trees";
-        CsvManager.writeToCSV(getArguments(ClientArgsNames.CSV_OUTPATH), outLines, headers);
+        CsvManager.writeToCSV(getArguments(ClientArgsNames.CSV_OUTPATH), rawResult, headers);
         trees.clear();
         System.exit(SUCCESS);
     }
