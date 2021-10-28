@@ -11,6 +11,8 @@ import com.hazelcast.mapreduce.Job;
 import com.hazelcast.mapreduce.JobTracker;
 import com.hazelcast.mapreduce.KeyValueSource;
 
+import org.apache.commons.lang3.math.NumberUtils;
+
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -24,7 +26,7 @@ public class Query3 extends BasicQuery {
         try {
             if (commonArgsNull() || getArguments(ClientArgsNames.N) == null)
                 throw new IllegalArgumentException("Address, in directory and out directory must be specified.");
-            if (!commonArgsOK()) {
+            if (!commonArgsOK() || NumberUtils.isCreatable(getArguments(ClientArgsNames.N))) {
                 throw new IllegalArgumentException("City, inPath and outPath must be correctly spelled.");
             }
 
