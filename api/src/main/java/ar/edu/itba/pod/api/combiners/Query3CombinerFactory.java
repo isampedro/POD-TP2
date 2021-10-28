@@ -28,7 +28,7 @@ public class Query3CombinerFactory implements CombinerFactory<String, String, Se
 
         @Override
         public Set<String> finalizeChunk() {
-            return this.distinctSpecies;
+            return new HashSet<>(distinctSpecies);
         }
     }
 }
