@@ -1,27 +1,18 @@
 package ar.edu.itba.pod.client;
 
-import ar.edu.itba.pod.api.Neighborhood;
 import ar.edu.itba.pod.api.Tree;
-import ar.edu.itba.pod.api.combiners.Query1CombinerFactory;
 import ar.edu.itba.pod.api.combiners.Query2CombinerFactory;
-import ar.edu.itba.pod.api.mappers.Query1Mapper;
 import ar.edu.itba.pod.api.mappers.Query2Mapper;
-import ar.edu.itba.pod.api.reducers.AverageReducerFactory;
-import ar.edu.itba.pod.api.reducers.SumReducerFactory;
 import ar.edu.itba.pod.api.reducers.SumReducerFactoryQuery2;
-import com.hazelcast.client.proxy.ClientListProxy;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.ICompletableFuture;
 import com.hazelcast.core.IList;
-import com.hazelcast.core.IMap;
 import com.hazelcast.mapreduce.Job;
 import com.hazelcast.mapreduce.JobTracker;
 import com.hazelcast.mapreduce.KeyValueSource;
 import ar.edu.itba.pod.api.Pair;
-
 import java.util.*;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Query2 extends BasicQuery{
@@ -58,15 +49,21 @@ public class Query2 extends BasicQuery{
 
     private static List<String> postProcess(Map<Pair<String,String>, Double> rawResult) {
         //TODO: MEJORAR EL CODIGO!!!!!!!!!!
-        final Map<String, Double> finalMap = new HashMap<>();
-        rawResult.forEach( (k, v) -> finalMap.put( k.toString(), v ));
+        final Map<String, Map<String, Double>> finalMap = new TreeMap<>();
+        rawResult.forEach( (k, v) -> {
+            Map<String, Double> map = new HashMap<>();
+            map.put(k.snd, v);
+            finalMap.put(k.fst, map);
+        });
 
-        List<Map.Entry<String, Double>> result = finalMap.entrySet().stream()
-                .sorted(Comparator.comparing((Function<Map.Entry<String, Double>, Double>) Map.Entry::getValue)
-                        .thenComparing(Map.Entry::getKey)).collect(Collectors.toList());
+        List<Map.Entry<String, Map<String, Double>>> result = new ArrayList<>(finalMap.entrySet());
+
 
         return result.stream()
-                .map(entry -> entry.getKey() + ";" + entry.getValue())
+                .map(entry -> {
+                    String treeName = (String) entry.getValue().keySet().toArray()[0];
+                    return entry.getKey() + ";" + treeName + ";" + entry.getValue().get(treeName);
+                })
                 .collect(Collectors.toList());
     }
 

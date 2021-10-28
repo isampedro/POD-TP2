@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 
-public class Pair<A extends Serializable, B extends Serializable> implements Serializable {
+public class Pair<A extends Serializable & Comparable<A>, B extends Serializable> implements Comparable<A>, Serializable {
 
     public A fst;
     public B snd;
@@ -35,7 +35,12 @@ public class Pair<A extends Serializable, B extends Serializable> implements Ser
         else return fst.hashCode() * 17 + snd.hashCode();
     }
 
-    public static <A extends Serializable, B extends Serializable> Pair<A,B> of(A a, B b) {
+    public static <A extends Serializable & Comparable<A>, B extends Serializable> Pair<A,B> of(A a, B b) {
         return new Pair<>(a,b);
+    }
+
+    @Override
+    public int compareTo(A a) {
+        return this.fst.compareTo(a);
     }
 }
