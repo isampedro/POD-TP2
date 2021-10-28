@@ -63,13 +63,13 @@ public class Query5 extends BasicQuery{
 
 
         final Job<String, Long> finalJob = tracker.newJob(sourceSpeciesPerStreet);
-        final ICompletableFuture<Map<Integer, List<String>>> finalFuture = finalJob
+        final ICompletableFuture<Map<Integer, ArrayList<String>>> finalFuture = finalJob
                 .mapper(new Query5MapperB())
                 .combiner(new Query4CombinerFactory())
                 .reducer(new Query4ReducerFactory())
                 .submit();
 
-        final Map<Integer, List<String>> finalRawResult = finalFuture.get();
+        final Map<Integer, ArrayList<String>> finalRawResult = finalFuture.get();
 
         List<String> outLines = postProcess(finalRawResult, getArguments(ClientArgsNames.COMMON_NAME));
 
@@ -77,7 +77,7 @@ public class Query5 extends BasicQuery{
         CsvManager.writeToCSV(getArguments(ClientArgsNames.CSV_OUTPATH), outLines, headers);
     }
 
-    private static List<String> postProcess( final Map<Integer,List<String>> rawResult, String commonName ) {
+    private static List<String> postProcess( final Map<Integer, ArrayList<String>> rawResult, String commonName ) {
         final List<String> streetPairs = new LinkedList<>();
         rawResult.forEach((ten, streets) -> {
             for(int i = 0; i < streets.size(); i++) {

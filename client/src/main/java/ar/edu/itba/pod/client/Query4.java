@@ -15,12 +15,8 @@ import com.hazelcast.mapreduce.Job;
 import com.hazelcast.mapreduce.JobTracker;
 import com.hazelcast.mapreduce.KeyValueSource;
 
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Query4 extends BasicQuery{
@@ -71,13 +67,13 @@ public class Query4 extends BasicQuery{
 
 
         final Job<String, Integer> finalJob = tracker.newJob(sourceSpeciesPerNeighborhood);
-        final ICompletableFuture<Map<Integer, List<String>>> finalFuture = finalJob
+        final ICompletableFuture<Map<Integer, ArrayList<String>>> finalFuture = finalJob
                 .mapper(new Query4Mapper())
                 .combiner(new Query4CombinerFactory())
                 .reducer(new Query4ReducerFactory())
                 .submit();
 
-        final Map<Integer, List<String>> finalRawResult = finalFuture.get();
+        final Map<Integer, ArrayList<String>> finalRawResult = finalFuture.get();
         final List<String> outLines = postProcess(finalRawResult);
         String headers = "GROUP;NEIGHBOURHOOD A;NEIGHBOURHOOD B";
         CsvManager.writeToCSV(getArguments(ClientArgsNames.CSV_OUTPATH), outLines, headers);
@@ -92,7 +88,7 @@ public class Query4 extends BasicQuery{
         return trees;
     }
 
-    private static List<String> postProcess(Map<Integer, List<String>> rawResult) {
+    private static List<String> postProcess(Map<Integer, ArrayList<String>> rawResult) {
         final List<String> neighborhoodPairs = new LinkedList<>();
         rawResult.forEach((hundred, neighborhoods) -> {
             for(int i = 0; i < neighborhoods.size(); i++) {

@@ -1,5 +1,5 @@
 package ar.edu.itba.pod.api;
-
+/*
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
@@ -86,3 +86,4 @@ public class Query2Test {
     }
 
 }
+*/

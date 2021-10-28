@@ -4,24 +4,23 @@ import com.hazelcast.mapreduce.Combiner;
 import com.hazelcast.mapreduce.CombinerFactory;
 import ar.edu.itba.pod.api.Pair;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.ArrayList;
 
-public class Query4CombinerFactory implements CombinerFactory<Integer, String, Pair<Integer, List<String>>> {
+public class Query4CombinerFactory implements CombinerFactory<Integer, String, Pair<Integer, ArrayList<String>>> {
 
     @Override
-    public Combiner<String, Pair<Integer, List<String>>> newCombiner(Integer hundred) {
+    public Combiner<String, Pair<Integer, ArrayList<String>>> newCombiner(Integer hundred) {
         return new Query4Combiner(hundred);
     }
 
-    private class Query4Combiner extends Combiner<String, Pair<Integer, List<String>>> {
+    private class Query4Combiner extends Combiner<String, Pair<Integer, ArrayList<String>>> {
 
-        private final List<String> neighborhoods;
+        private final ArrayList<String> neighborhoods;
         private final Integer number;
 
         public Query4Combiner(Integer number) {
             this.number = number;
-            this.neighborhoods = new LinkedList<>();
+            this.neighborhoods = new ArrayList<>();
         }
 
         @Override
@@ -35,7 +34,7 @@ public class Query4CombinerFactory implements CombinerFactory<Integer, String, P
         }
 
         @Override
-        public Pair<Integer, List<String>> finalizeChunk() {
+        public Pair<Integer, ArrayList<String>> finalizeChunk() {
             return new Pair<>(this.number, this.neighborhoods);
         }
     }
