@@ -25,9 +25,12 @@ public class Query3 extends BasicQuery {
         parseArguments();
         try {
             if (commonArgsNull() || getArguments(ClientArgsNames.N) == null)
-                throw new IllegalArgumentException("Address, in directory and out directory must be specified.");
-            if (!commonArgsOK() || NumberUtils.isCreatable(getArguments(ClientArgsNames.N))) {
+                throw new IllegalArgumentException("Address, N, in directory and out directory must be specified.");
+            if (!commonArgsOK()) {
                 throw new IllegalArgumentException("City, inPath and outPath must be correctly spelled.");
+            }
+            if (!NumberUtils.isCreatable(getArguments(ClientArgsNames.N))) {
+                throw new IllegalArgumentException("N must be a number.");
             }
 
         } catch (IllegalArgumentException e) {
@@ -47,7 +50,7 @@ public class Query3 extends BasicQuery {
                 .combiner(new Query3CombinerFactory()).reducer(new Query3ReducerFactory()).submit();
 
         final Map<String, Integer> rawResult = future.get();
-        final List<String> outLines = postProcess(rawResult, Integer.parseInt(ClientArgsNames.N.getArgumentName()));
+        final List<String> outLines = postProcess(rawResult, Integer.parseInt(getArguments(ClientArgsNames.N)));
         String headers = "NEIGHBOURHOOD;COMMON_NAME_COUNT";
         CsvManager.writeToCSV(getArguments(ClientArgsNames.CSV_OUTPATH), outLines, headers);
         System.exit(SUCCESS);

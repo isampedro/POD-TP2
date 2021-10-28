@@ -29,7 +29,8 @@ public class Query5 extends BasicQuery {
         try {
             if (commonArgsNull() || getArguments(ClientArgsNames.COMMON_NAME) == null
                     || getArguments(ClientArgsNames.NEIGHBOURHOOD) == null)
-                throw new IllegalArgumentException("Address, in directory and out directory must be specified.");
+                throw new IllegalArgumentException(
+                        "Address, common name, neighborhood, in directory and out directory must be specified.");
             if (!commonArgsOK()) {
                 throw new IllegalArgumentException("City, inPath and outPath must be correctly spelled.");
             }
@@ -70,10 +71,11 @@ public class Query5 extends BasicQuery {
         System.exit(SUCCESS);
     }
 
-    private static List<String> postProcess( final Map<Integer, ArrayList<String>> rawResult) {
-        final List<Integer> tens = new ArrayList<>(rawResult.keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList()));
+    private static List<String> postProcess(final Map<Integer, ArrayList<String>> rawResult) {
+        final List<Integer> tens = new ArrayList<>(
+                rawResult.keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList()));
         final List<String> streetPairs = new ArrayList<>();
-        tens.forEach(ten-> {
+        tens.forEach(ten -> {
             List<String> streets = rawResult.get(ten).stream().sorted().collect(Collectors.toList());
             for (int i = 0; i < streets.size(); i++) {
                 for (int j = i + 1; j < streets.size(); j++) {
