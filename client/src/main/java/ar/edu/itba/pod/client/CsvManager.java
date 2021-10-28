@@ -15,28 +15,28 @@ public class CsvManager {
     private static final int BARRIO = 0;
     private static final int POBLACION = 1;
 
-    public static void writeToCSV(String outPath, List<String> results, String headers){
+    public static void writeToCSV(String outPath, List<String> results, String headers) {
         results.add(0, headers);
         int i = 0;
         StringBuffer resultChunck = new StringBuffer();
-        try(BufferedWriter bw = new BufferedWriter(new FileWriter(outPath + "/query1.csv"))) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(outPath + "/query1.csv"))) {
             for (String result : results) {
                 System.out.println(result);
                 resultChunck.append(result).append('\n');
                 i++;
-                if(i % 50 == 0) {
+                if (i % 50 == 0) {
                     i = 0;
                     bw.write(resultChunck.toString());
                     resultChunck = new StringBuffer();
                 }
             }
-            if(!resultChunck.toString().equals("")) {
+            if (!resultChunck.toString().equals("")) {
                 bw.write(resultChunck.toString());
             }
         } catch (IOException e) {
             System.out.println("la cagamos");
             System.out.println(e.getMessage());
-            //logger.error("IOException {} ",e.getMessage());
+            // logger.error("IOException {} ",e.getMessage());
         }
     }
 
@@ -58,28 +58,25 @@ public class CsvManager {
 
             FileReader fileReader = new FileReader(fileName);
 
-            BufferedReader bufferedReader =
-                    new BufferedReader(fileReader);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
 
-            while((line = bufferedReader.readLine()) != null) {
-                if(title) {
+            while ((line = bufferedReader.readLine()) != null) {
+                if (title) {
                     title = false;
                 } else {
-                    lineArgs = line.split(",");
+                    lineArgs = line.split(";");
                     final String neighborhoodName = lineArgs[COMUNA];
                     trees.add(new Tree(lineArgs[NOMBRE],
-                            neighborhoods
-                                    .stream()
-                                    .filter(n -> n.getName().equals(neighborhoodName))
-                                    .findAny()
-                                    .orElse(new Neighborhood(neighborhoodName, 0)), lineArgs[CALLE]));
+                            neighborhoods.stream().filter(n -> n.getName().equals(neighborhoodName)).findAny()
+                                    .orElse(new Neighborhood(neighborhoodName, 0)),
+                            lineArgs[CALLE]));
                 }
             }
 
             bufferedReader.close();
-        } catch(FileNotFoundException ex) {
+        } catch (FileNotFoundException ex) {
             System.out.println("Unable to open file '" + fileName + ".");
-        } catch(IOException ex) {
+        } catch (IOException ex) {
             System.out.println("Error reading file '" + fileName + ".");
         }
         return trees;
@@ -97,22 +94,21 @@ public class CsvManager {
 
             FileReader fileReader = new FileReader(fileName);
 
-            BufferedReader bufferedReader =
-                    new BufferedReader(fileReader);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
 
-            while((line = bufferedReader.readLine()) != null) {
-                if(title) {
+            while ((line = bufferedReader.readLine()) != null) {
+                if (title) {
                     title = false;
                 } else {
-                    lineArgs = line.split(",");
+                    lineArgs = line.split(";");
                     neighborhoods.add(new Neighborhood(lineArgs[BARRIO], Long.parseLong(lineArgs[POBLACION])));
                 }
             }
 
             bufferedReader.close();
-        } catch(FileNotFoundException ex) {
+        } catch (FileNotFoundException ex) {
             System.out.println("Unable to open file '" + fileName + ".");
-        } catch(IOException ex) {
+        } catch (IOException ex) {
             System.out.println("Error reading file '" + fileName + ".");
         }
         return neighborhoods;

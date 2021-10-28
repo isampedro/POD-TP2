@@ -69,8 +69,10 @@ public class Query4 extends BasicQuery {
         logger.info("Lineas finales: " + outLines.size());
         String headers = "GROUP;NEIGHBOURHOOD A;NEIGHBOURHOOD B";
         CsvManager.writeToCSV(getArguments(ClientArgsNames.CSV_OUTPATH), outLines, headers);
-        System.exit(SUCCESS);
+        trees.clear();
+        differentSpecies.clear();
         logger.info("Finalizado con éxito");
+        System.exit(SUCCESS);
     }
 
     private static List<String> postProcess(Map<Integer, ArrayList<String>> rawResult) {
