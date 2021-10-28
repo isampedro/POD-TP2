@@ -48,7 +48,7 @@ public class Query5Test {
 
     // Top n barrios con mayor cantidad de especies distintas
     @Test
-    public void query1Test() throws InterruptedException, ExecutionException {
+    public void query5Test() throws InterruptedException, ExecutionException {
 
         HazelcastInstance h = Hazelcast.newHazelcastInstance();
 

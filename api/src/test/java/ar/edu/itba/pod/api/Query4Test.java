@@ -74,6 +74,7 @@ public class Query4Test {
 
         final Map<String, Integer> rawResult = future.get();
 
+        System.out.println(rawResult);
 
         IMap<String, Integer> differentSpecies = h.getMap("trees_species_per_neighborhoodTEST");
         differentSpecies.putAll(rawResult);
