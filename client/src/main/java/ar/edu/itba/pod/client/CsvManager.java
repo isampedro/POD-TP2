@@ -14,7 +14,7 @@ public class CsvManager {
     private static final int CALLE = 4;
     private static final int BARRIO = 0;
     private static final int POBLACION = 1;
-    private static final String SEPARATOR = ",";
+    private static final String SEPARATOR = ";";
 
     public static void writeToCSV(String outPath, List<String> results, String headers) {
         results.add(0, headers);
