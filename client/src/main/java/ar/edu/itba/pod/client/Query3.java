@@ -71,7 +71,9 @@ public class Query3 extends BasicQuery {
         // Sort the list
         list.sort(new Comparator<Map.Entry<String, Integer>>() {
             public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) {
-                return (o2.getValue()).compareTo(o1.getValue());
+                int compareSpecie = o2.getValue().compareTo(o1.getValue());
+                int compareName = o1.getKey().compareTo(o2.getKey());
+                return  compareSpecie==0?compareName:compareSpecie;
             }
         });
 

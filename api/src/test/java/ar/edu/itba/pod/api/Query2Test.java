@@ -31,10 +31,13 @@ public class Query2Test {
 
     private static final Neighborhood neigh1 = new Neighborhood("Capital", 9);
     private static final Neighborhood neigh2 = new Neighborhood("Ituzaingo", 2);
+    private static final Neighborhood neigh3 = new Neighborhood("Ale", 4);
+    private static final Neighborhood neigh4 = new Neighborhood("Boca", 4);
 
     private static final List<Tree> trees = Arrays.asList(new Tree("a", neigh1, "Gral Wololo"),
             new Tree("a", neigh1, "Gral Wololo"), new Tree("e", neigh1, "Gral Wololo"),
             new Tree("d", neigh1, "Gral Wololo"), new Tree("d", neigh1, "Gral Wololo"),
+            new Tree("d", neigh3, "Gral Wololo"), new Tree("e", neigh4, "Gral Wololo"),
             new Tree("e", neigh2, "Av jusepe"));
 
     // Para cada barrio, la especie con mayor cantidad de árboles por habitante
@@ -60,9 +63,10 @@ public class Query2Test {
 
         System.out.println(outLines);
 
-
-        assertEquals("Capital;a;0.22", outLines.get(0));
-        assertEquals("Ituzaingo;e;0.50", outLines.get(1));
+        assertEquals("Ale;d;0.25", outLines.get(0));
+        assertEquals("Boca;e;0.25", outLines.get(1));
+        assertEquals("Capital;a;0.22", outLines.get(2));
+        assertEquals("Ituzaingo;e;0.50", outLines.get(3));
 
     }
 

@@ -59,24 +59,31 @@ public class Query1 extends BasicQuery {
     }
 
     private static List<String> postProcess(Map<String, Long> rawResult) {
-        // IList<Neighborhood> neighborhoods =
-        // client.getList(HazelcastManager.getNeighborhoodNamespace());
-        // final List<String> neighborhoodsNames = neighborhoods.stream()
-        // .map(Neighborhood::getName).collect(Collectors.toList());
 
-        /*
-         * List<Map.Entry<String, Long>> result = rawResult.entrySet().stream()
-         * .filter(entry -> neighborhoodsNames.contains(entry.getKey()))
-         * .sorted(Comparator.comparing((Function<Map.Entry<String, Long>, Long>)
-         * Map.Entry::getValue)
-         * .thenComparing(Map.Entry::getKey)).collect(Collectors.toList());
-         */
+        Map<String, Long> result = sortByValue(rawResult);
+        List<String> l = new ArrayList<>(result.keySet());
 
-        List<Map.Entry<String, Long>> result = rawResult.entrySet().stream()
-                .sorted(Comparator.comparing((Function<Map.Entry<String, Long>, Long>) Map.Entry::getValue)
-                        .thenComparing(Map.Entry::getKey))
-                .collect(Collectors.toList());
+        return l.stream().map(entry -> entry + ";" + result.get(entry)).collect(Collectors.toList());
+    }
 
-        return result.stream().map(entry -> entry.getKey() + ";" + entry.getValue()).collect(Collectors.toList());
+    public static Map<String, Long> sortByValue(Map<String, Long> hm) {
+        // Create a list from elements of HashMap
+        List<Map.Entry<String, Long>> list = new LinkedList<>(hm.entrySet());
+
+        // Sort the list
+        list.sort(new Comparator<Map.Entry<String, Long>>() {
+            public int compare(Map.Entry<String, Long> o1, Map.Entry<String, Long> o2) {
+                int compareSpecie = o2.getValue().compareTo(o1.getValue());
+                int compareName = o1.getKey().compareTo(o2.getKey());
+                return  compareSpecie==0?compareName:compareSpecie;
+            }
+        });
+
+        // put data from sorted list to hashmap
+        HashMap<String, Long> temp = new LinkedHashMap<>();
+        for (Map.Entry<String, Long> aa : list) {
+            temp.put(aa.getKey(), aa.getValue());
+        }
+        return temp;
     }
 }
