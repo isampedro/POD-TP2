@@ -1,5 +1,5 @@
 package ar.edu.itba.pod.api;
-/*
+
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
@@ -33,16 +33,20 @@ public class Query2Test {
         Hazelcast.shutdownAll();
     }
 
+    private static final Neighborhood neigh1 =new Neighborhood("Capital", 2);
+    private static final Neighborhood neigh2 =new Neighborhood("Ituzaingo", 4);
+
     private static final List<Tree> trees = Arrays.asList(
-            new Tree("a", new Neighborhood("40", 6), "Gral Wololo"),
-            new Tree("a", new Neighborhood("40", 6), "Gral Wololo"),
-            new Tree("c", new Neighborhood("40", 6), "Gral Wololo"),
-            new Tree("d", new Neighborhood("40", 6), "Gral Wololo"),
-            new Tree("e", new Neighborhood("11", 2), "Av jusepe"));
+            new Tree("a",neigh1, "Gral Wololo"),
+            new Tree("a",neigh1, "Gral Wololo"),
+            new Tree("c",neigh1, "Gral Wololo"),
+            new Tree("d",neigh1, "Gral Wololo"),
+            new Tree("d",neigh1, "Gral Wololo"),
+            new Tree("e",neigh2, "Av jusepe"));
 
     // Para cada barrio, la especie con mayor cantidad de árboles por habitante
     @Test
-    public void query1Test() throws InterruptedException, ExecutionException {
+    public void query2Test() throws InterruptedException, ExecutionException {
 
         HazelcastInstance h = Hazelcast.newHazelcastInstance();
 
@@ -51,8 +55,8 @@ public class Query2Test {
 
         final JobTracker tracker = h.getJobTracker("query2");
 
-        final KeyValueSource<String, Tree> sourceTrees = KeyValueSource.fromList(iTrees)
-                ;
+        final KeyValueSource<String, Tree> sourceTrees = KeyValueSource.fromList(iTrees);
+
         final Job<String, Tree> job = tracker.newJob(sourceTrees);
         final ICompletableFuture<Map<Pair<String, String>, Double>> future = job
                 .mapper(new Query2Mapper())
@@ -64,17 +68,18 @@ public class Query2Test {
 
         List<String> outLines = postProcess(rawResult);
 
+        System.out.println(outLines);
+
         assertEquals(2, outLines.size());
 
-
-        assertEquals("11;1",outLines.get(0));
-        assertEquals("40;4", outLines.get(1));
+        assertEquals("11;e;0.5",outLines.get(0));
+        assertEquals("40;a;0.2" , outLines.get(1));
 
     }
 
     private static List<String> postProcess(Map<Pair<String,String>, Double> rawResult) {
         final Map<String, Double> finalMap = new HashMap<>();
-        rawResult.forEach( (k, v) -> finalMap.put( k.fst + k.snd, v ));
+        rawResult.forEach( (k, v) -> finalMap.put( k.toString(), v ));
 
         List<Map.Entry<String, Double>> result = finalMap.entrySet().stream()
                 .sorted(Comparator.comparing((Function<Map.Entry<String, Double>, Double>) Map.Entry::getValue)
@@ -86,4 +91,3 @@ public class Query2Test {
     }
 
 }
-*/

@@ -19,7 +19,7 @@ public class Pair<A extends Serializable, B extends Serializable> implements Ser
     }
 
     public String toString() {
-        return "Pair[" + fst + "," + snd + "]";
+        return fst + ";" + snd;
     }
 
     public boolean equals(Object other) {

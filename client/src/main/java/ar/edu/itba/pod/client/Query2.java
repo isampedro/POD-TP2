@@ -59,7 +59,7 @@ public class Query2 extends BasicQuery{
     private static List<String> postProcess(Map<Pair<String,String>, Double> rawResult) {
         //TODO: MEJORAR EL CODIGO!!!!!!!!!!
         final Map<String, Double> finalMap = new HashMap<>();
-        rawResult.forEach( (k, v) -> finalMap.put( k.fst + k.snd, v ));
+        rawResult.forEach( (k, v) -> finalMap.put( k.toString(), v ));
 
         List<Map.Entry<String, Double>> result = finalMap.entrySet().stream()
                 .sorted(Comparator.comparing((Function<Map.Entry<String, Double>, Double>) Map.Entry::getValue)
