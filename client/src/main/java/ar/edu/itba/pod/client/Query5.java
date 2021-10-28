@@ -1,17 +1,11 @@
 package ar.edu.itba.pod.client;
 
 import ar.edu.itba.pod.api.Tree;
-import ar.edu.itba.pod.api.combiners.Query1CombinerFactory;
-import ar.edu.itba.pod.api.combiners.Query3CombinerFactory;
 import ar.edu.itba.pod.api.combiners.Query4CombinerFactory;
 import ar.edu.itba.pod.api.combiners.Query5CombinerFactory;
-import ar.edu.itba.pod.api.mappers.Query1Mapper;
-import ar.edu.itba.pod.api.mappers.Query4Mapper;
 import ar.edu.itba.pod.api.mappers.Query5Mapper;
 import ar.edu.itba.pod.api.mappers.Query5MapperB;
-import ar.edu.itba.pod.api.reducers.Query3ReducerFactory;
 import ar.edu.itba.pod.api.reducers.Query4ReducerFactory;
-import ar.edu.itba.pod.api.reducers.SumReducerFactory;
 import ar.edu.itba.pod.api.reducers.SumReducerFactoryQuery5;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.ICompletableFuture;
@@ -20,11 +14,9 @@ import com.hazelcast.core.IMap;
 import com.hazelcast.mapreduce.Job;
 import com.hazelcast.mapreduce.JobTracker;
 import com.hazelcast.mapreduce.KeyValueSource;
-import ar.edu.itba.pod.api.Pair;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Query5 extends BasicQuery {
