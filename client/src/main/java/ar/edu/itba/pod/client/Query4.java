@@ -75,15 +75,17 @@ public class Query4 extends BasicQuery {
     }
 
     private static List<String> postProcess(Map<Integer, ArrayList<String>> rawResult) {
-        final List<String> neighborhoodPairs = new LinkedList<>();
-        rawResult.forEach((hundred, neighborhoods) -> {
-            for (int i = 0; i < neighborhoods.size(); i++) {
-                for (int j = i + 1; j < neighborhoods.size(); j++) {
-                    neighborhoodPairs.add(hundred + ";" + neighborhoods.get(i) + ";" + neighborhoods.get(j));
+
+        final List<Integer> hundreds = new ArrayList<>(rawResult.keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList()));
+        final List<String> neighborPairs = new ArrayList<>();
+        hundreds.forEach(t -> {
+            List<String> streets = rawResult.get(t).stream().sorted().collect(Collectors.toList());
+            for (int i = 0; i < streets.size(); i++) {
+                for (int j = i + 1; j < streets.size(); j++) {
+                    neighborPairs.add(t + ";" + streets.get(i) + ";" + streets.get(j));
                 }
             }
         });
-
-        return neighborhoodPairs.stream().sorted().collect(Collectors.toList());
+        return neighborPairs;
     }
 }

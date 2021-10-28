@@ -63,23 +63,24 @@ public class Query5 extends BasicQuery {
 
         final Map<Integer, ArrayList<String>> finalRawResult = finalFuture.get();
 
-        List<String> outLines = postProcess(finalRawResult, getArguments(ClientArgsNames.COMMON_NAME));
+        List<String> outLines = postProcess(finalRawResult);
 
         String headers = "GROUP;STREET A; STREET B";
         CsvManager.writeToCSV(getArguments(ClientArgsNames.CSV_OUTPATH), outLines, headers);
         System.exit(SUCCESS);
     }
 
-    private static List<String> postProcess(final Map<Integer, ArrayList<String>> rawResult, String commonName) {
-        final List<String> streetPairs = new LinkedList<>();
-        rawResult.forEach((ten, streets) -> {
+    private static List<String> postProcess( final Map<Integer, ArrayList<String>> rawResult) {
+        final List<Integer> tens = new ArrayList<>(rawResult.keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList()));
+        final List<String> streetPairs = new ArrayList<>();
+        tens.forEach(ten-> {
+            List<String> streets = rawResult.get(ten).stream().sorted().collect(Collectors.toList());
             for (int i = 0; i < streets.size(); i++) {
                 for (int j = i + 1; j < streets.size(); j++) {
                     streetPairs.add(ten + ";" + streets.get(i) + ";" + streets.get(j));
                 }
             }
         });
-
-        return streetPairs.stream().sorted().collect(Collectors.toList());
+        return streetPairs;
     }
 }

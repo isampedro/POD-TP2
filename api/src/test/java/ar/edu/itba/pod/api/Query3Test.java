@@ -18,6 +18,8 @@ import ar.edu.itba.pod.api.combiners.*;
 import ar.edu.itba.pod.api.mappers.*;
 import ar.edu.itba.pod.api.reducers.*;
 
+import static org.junit.Assert.assertEquals;
+
 public class Query3Test {
 
     @After

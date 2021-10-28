@@ -120,9 +120,5 @@ public class Query4Test {
             }
         });
         return neighborPairs;
-
-        return neighborhoodPairs.stream()
-                .sorted()
-                .collect(Collectors.toList());
     }
 }
