@@ -14,18 +14,21 @@ import com.hazelcast.core.IMap;
 import com.hazelcast.mapreduce.Job;
 import com.hazelcast.mapreduce.JobTracker;
 import com.hazelcast.mapreduce.KeyValueSource;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 public class Query5 extends BasicQuery {
     private static final int SUCCESS = 0, FAILURE = 1;
+    private final static Logger logger = LoggerFactory.getLogger(Query5.class);
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
 
+        logger.info("Query 5");
         parseArguments();
-
+        logger.info("Argumentos parseados");
         try {
             if (commonArgsNull() || getArguments(ClientArgsNames.COMMON_NAME) == null
                     || getArguments(ClientArgsNames.NEIGHBOURHOOD) == null)
@@ -39,6 +42,7 @@ public class Query5 extends BasicQuery {
             System.exit(FAILURE);
         }
 
+        logger.info("Consiguiendo instancia de hazelcast");
         HazelcastInstance client = getHazelcastInstance();
         final JobTracker tracker = client.getJobTracker("query5");
 
@@ -65,10 +69,11 @@ public class Query5 extends BasicQuery {
         final Map<Integer, ArrayList<String>> finalRawResult = finalFuture.get();
 
         List<String> outLines = postProcess(finalRawResult);
-
+        logger.info("Lineas finales: " + outLines.size());
         String headers = "GROUP;STREET A; STREET B";
         CsvManager.writeToCSV(getArguments(ClientArgsNames.CSV_OUTPATH), outLines, headers);
         System.exit(SUCCESS);
+        logger.info("Finalizado con éxito");
     }
 
     private static List<String> postProcess(final Map<Integer, ArrayList<String>> rawResult) {

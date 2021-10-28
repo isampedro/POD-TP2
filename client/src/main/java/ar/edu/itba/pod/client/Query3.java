@@ -10,19 +10,22 @@ import com.hazelcast.core.IList;
 import com.hazelcast.mapreduce.Job;
 import com.hazelcast.mapreduce.JobTracker;
 import com.hazelcast.mapreduce.KeyValueSource;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.commons.lang3.math.NumberUtils;
-
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 public class Query3 extends BasicQuery {
     private static final int SUCCESS = 0, FAILURE = 1;
+    private final static Logger logger = LoggerFactory.getLogger(Query3.class);
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
 
+        logger.info("Query 3");
         parseArguments();
+        logger.info("Argumentos parseados");
         try {
             if (commonArgsNull() || getArguments(ClientArgsNames.N) == null)
                 throw new IllegalArgumentException("Address, N, in directory and out directory must be specified.");
@@ -38,6 +41,7 @@ public class Query3 extends BasicQuery {
             System.exit(FAILURE);
         }
 
+        logger.info("Consiguiendo instancia de hazelcast");
         HazelcastInstance client = getHazelcastInstance();
         final JobTracker tracker = client.getJobTracker("query3");
 
@@ -51,9 +55,11 @@ public class Query3 extends BasicQuery {
 
         final Map<String, Integer> rawResult = future.get();
         final List<String> outLines = postProcess(rawResult, Integer.parseInt(getArguments(ClientArgsNames.N)));
+        logger.info("Lineas finales: " + outLines.size());
         String headers = "NEIGHBOURHOOD;COMMON_NAME_COUNT";
         CsvManager.writeToCSV(getArguments(ClientArgsNames.CSV_OUTPATH), outLines, headers);
         System.exit(SUCCESS);
+        logger.info("Finalizado con éxito");
     }
 
     private static List<String> postProcess(Map<String, Integer> rawResult, int n) {
@@ -73,7 +79,7 @@ public class Query3 extends BasicQuery {
             public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) {
                 int compareSpecie = o2.getValue().compareTo(o1.getValue());
                 int compareName = o1.getKey().compareTo(o2.getKey());
-                return  compareSpecie==0?compareName:compareSpecie;
+                return compareSpecie == 0 ? compareName : compareSpecie;
             }
         });
 

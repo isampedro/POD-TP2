@@ -10,19 +10,22 @@ import com.hazelcast.core.IList;
 import com.hazelcast.mapreduce.Job;
 import com.hazelcast.mapreduce.JobTracker;
 import com.hazelcast.mapreduce.KeyValueSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Query1 extends BasicQuery {
 
     private static final int SUCCESS = 0, FAILURE = 1;
+    private final static Logger logger = LoggerFactory.getLogger(Query1.class);
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
 
+        logger.info("Query 1");
         parseArguments();
-
+        logger.info("Argumentos parseados");
         try {
             if (commonArgsNull())
                 throw new IllegalArgumentException("Address, in directory and out directory must be specified.");
@@ -35,26 +38,26 @@ public class Query1 extends BasicQuery {
             System.exit(FAILURE);
         }
 
-        System.out.println("Antes de todo");
+        logger.info("Consiguiendo instancia de hazelcast");
         HazelcastInstance client = getHazelcastInstance();
         final JobTracker tracker = client.getJobTracker("query1");
 
         IList<Tree> trees = client.getList(HazelcastManager.getTreeNamespace());
-        System.out.println("trees: " + trees.size());
+        logger.info("Arboles: " + trees.size());
         KeyValueSource<String, Tree> sourceTrees = KeyValueSource.fromList(trees);
-        System.out.println("string de source: " + sourceTrees.toString());
+        logger.info("String de source: " + sourceTrees.toString());
         Job<String, Tree> job = tracker.newJob(sourceTrees);
-        System.out.println("string de job: " + job.toString());
+        logger.info("String de job: " + job.toString());
         ICompletableFuture<Map<String, Long>> future = job.mapper(new Query1Mapper())
                 .combiner(new Query1CombinerFactory()).reducer(new SumReducerFactory()).submit();
 
         Map<String, Long> rawResult = future.get();
-        System.out.println("raw results: " + rawResult.size());
         List<String> outLines = postProcess(rawResult);
-        System.out.println("lineas finales: " + outLines.size());
+        logger.info("Lineas finales: " + outLines.size());
 
         String headers = "neighbourhood;trees";
         CsvManager.writeToCSV(getArguments(ClientArgsNames.CSV_OUTPATH), outLines, headers);
+        logger.info("Finalizado con éxito");
         System.exit(SUCCESS);
     }
 
@@ -75,7 +78,7 @@ public class Query1 extends BasicQuery {
             public int compare(Map.Entry<String, Long> o1, Map.Entry<String, Long> o2) {
                 int compareSpecie = o2.getValue().compareTo(o1.getValue());
                 int compareName = o1.getKey().compareTo(o2.getKey());
-                return  compareSpecie==0?compareName:compareSpecie;
+                return compareSpecie == 0 ? compareName : compareSpecie;
             }
         });
 

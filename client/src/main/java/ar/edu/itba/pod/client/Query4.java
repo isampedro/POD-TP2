@@ -14,17 +14,21 @@ import com.hazelcast.core.IMap;
 import com.hazelcast.mapreduce.Job;
 import com.hazelcast.mapreduce.JobTracker;
 import com.hazelcast.mapreduce.KeyValueSource;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 public class Query4 extends BasicQuery {
     private static final int SUCCESS = 0, FAILURE = 1;
+    private final static Logger logger = LoggerFactory.getLogger(Query4.class);
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
 
+        logger.info("Query 4");
         parseArguments();
+        logger.info("Argumentos parseados");
         try {
             if (commonArgsNull())
                 throw new IllegalArgumentException("Address, in directory and out directory must be specified.");
@@ -36,15 +40,8 @@ public class Query4 extends BasicQuery {
             System.out.println(e.getMessage());
             System.exit(FAILURE);
         }
-        /*
-         * pares de barrios con mismo centenar de especies -> salgo de query 3 con
-         * <barrio, cantidad de especies diferentes> mapper:tengo que <centenar, barrio>
-         * combiner: Map<centenar, list barrio> reducer: quiero terminar map centenar
-         * list de barrio. -> concateno combiner post: tengo que combinar los mapas ->
-         * se puede hacer en un collator? mapa final -> para cada mapa, si la key esta,
-         * agrego los barrios, sino put devuelvo final
-         */
 
+        logger.info("Consiguiendo instancia de hazelcast");
         HazelcastInstance client = getHazelcastInstance();
         final JobTracker tracker = client.getJobTracker("query4");
 
@@ -69,14 +66,17 @@ public class Query4 extends BasicQuery {
 
         final Map<Integer, ArrayList<String>> finalRawResult = finalFuture.get();
         final List<String> outLines = postProcess(finalRawResult);
+        logger.info("Lineas finales: " + outLines.size());
         String headers = "GROUP;NEIGHBOURHOOD A;NEIGHBOURHOOD B";
         CsvManager.writeToCSV(getArguments(ClientArgsNames.CSV_OUTPATH), outLines, headers);
         System.exit(SUCCESS);
+        logger.info("Finalizado con éxito");
     }
 
     private static List<String> postProcess(Map<Integer, ArrayList<String>> rawResult) {
 
-        final List<Integer> hundreds = new ArrayList<>(rawResult.keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList()));
+        final List<Integer> hundreds = new ArrayList<>(
+                rawResult.keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList()));
         final List<String> neighborPairs = new ArrayList<>();
         hundreds.forEach(t -> {
             List<String> streets = rawResult.get(t).stream().sorted().collect(Collectors.toList());
