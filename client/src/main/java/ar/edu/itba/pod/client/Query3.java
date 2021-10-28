@@ -69,25 +69,4 @@ public class Query3 extends BasicQuery {
 
         return l.stream().map(entry -> entry + ";" + result.get(entry)).collect(Collectors.toList()).subList(0, n);
     }
-
-    public static Map<String, Integer> sortByValue(Map<String, Integer> hm) {
-        // Create a list from elements of HashMap
-        List<Map.Entry<String, Integer>> list = new LinkedList<>(hm.entrySet());
-
-        // Sort the list
-        list.sort(new Comparator<Map.Entry<String, Integer>>() {
-            public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) {
-                int compareSpecie = o2.getValue().compareTo(o1.getValue());
-                int compareName = o1.getKey().compareTo(o2.getKey());
-                return compareSpecie == 0 ? compareName : compareSpecie;
-            }
-        });
-
-        // put data from sorted list to hashmap
-        HashMap<String, Integer> temp = new LinkedHashMap<>();
-        for (Map.Entry<String, Integer> aa : list) {
-            temp.put(aa.getKey(), aa.getValue());
-        }
-        return temp;
-    }
 }

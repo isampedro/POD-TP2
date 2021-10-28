@@ -55,7 +55,7 @@ public class Query2Test {
 
         final Job<String, Tree> job = tracker.newJob(sourceTrees);
         final ICompletableFuture<Map<Pair<String, String>, Double>> future = job.mapper(new Query2Mapper())
-                .combiner(new Query2CombinerFactory()).reducer(new SumReducerFactoryQuery2()).submit();
+                .combiner(new DoubleSumCombiner()).reducer(new DoubleSumReducerFactory()).submit();
 
         final Map<Pair<String, String>, Double> rawResult = future.get();
 

@@ -1,9 +1,9 @@
 package ar.edu.itba.pod.client;
 
 import ar.edu.itba.pod.api.Tree;
-import ar.edu.itba.pod.api.combiners.Query1CombinerFactory;
+import ar.edu.itba.pod.api.combiners.LongSumCombiner;
 import ar.edu.itba.pod.api.mappers.Query1Mapper;
-import ar.edu.itba.pod.api.reducers.SumReducerFactory;
+import ar.edu.itba.pod.api.reducers.LongSumReducerFactory;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.ICompletableFuture;
 import com.hazelcast.core.IList;
@@ -46,7 +46,7 @@ public class Query1 extends BasicQuery {
         Job<String, Tree> job = tracker.newJob(sourceTrees);
         logger.info("MapReduce Started");
         ICompletableFuture<Map<String, Long>> future = job.mapper(new Query1Mapper())
-                .combiner(new Query1CombinerFactory()).reducer(new SumReducerFactory()).submit();
+                .combiner(new LongSumCombiner()).reducer(new LongSumReducerFactory()).submit();
         logger.info("MapReduce Finished");
         Map<String, Long> rawResult = future.get();
         List<String> outLines = postProcess(rawResult);
@@ -65,24 +65,4 @@ public class Query1 extends BasicQuery {
         return l.stream().map(entry -> entry + ";" + result.get(entry)).collect(Collectors.toList());
     }
 
-    public static Map<String, Long> sortByValue(Map<String, Long> hm) {
-        // Create a list from elements of HashMap
-        List<Map.Entry<String, Long>> list = new LinkedList<>(hm.entrySet());
-
-        // Sort the list
-        list.sort(new Comparator<Map.Entry<String, Long>>() {
-            public int compare(Map.Entry<String, Long> o1, Map.Entry<String, Long> o2) {
-                int compareSpecie = o2.getValue().compareTo(o1.getValue());
-                int compareName = o1.getKey().compareTo(o2.getKey());
-                return compareSpecie == 0 ? compareName : compareSpecie;
-            }
-        });
-
-        // put data from sorted list to hashmap
-        HashMap<String, Long> temp = new LinkedHashMap<>();
-        for (Map.Entry<String, Long> aa : list) {
-            temp.put(aa.getKey(), aa.getValue());
-        }
-        return temp;
-    }
 }

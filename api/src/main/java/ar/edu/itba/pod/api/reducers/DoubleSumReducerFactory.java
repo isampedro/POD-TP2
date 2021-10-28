@@ -4,7 +4,7 @@ import com.hazelcast.mapreduce.Reducer;
 import com.hazelcast.mapreduce.ReducerFactory;
 import ar.edu.itba.pod.api.Pair;
 
-public class SumReducerFactoryQuery2 implements ReducerFactory<Pair<String,String>, Double, Double> {
+public class DoubleSumReducerFactory implements ReducerFactory<Pair<String,String>, Double, Double> {
     @Override
     public Reducer<Double, Double> newReducer(Pair<String,String> s) {
         return new SumReducer();

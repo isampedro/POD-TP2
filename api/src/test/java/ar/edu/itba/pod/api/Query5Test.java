@@ -74,7 +74,7 @@ public class Query5Test {
         // getting how many trees of the specie there are for each street
         Job<String, Tree> job = tracker.newJob(sourceTrees);
         ICompletableFuture<Map<String, Long>> future = job.mapper(new Query5Mapper(COMMON_NAME, NEIGHBOURHOOD))
-                .combiner(new Query5CombinerFactory()).reducer(new SumReducerFactoryQuery5()).submit();
+                .combiner(new LongSumCombiner()).reducer(new LongSumReducerFactory()).submit();
 
         Map<String, Long> rawResult = future.get();
 

@@ -3,9 +3,9 @@ package ar.edu.itba.pod.client;
 import com.hazelcast.core.HazelcastInstance;
 import org.slf4j.Logger;
 import java.io.File;
-import java.util.HashMap;
+import java.util.*;
 
-public abstract class BasicQuery {
+public abstract class BasicQuery <K extends Comparable<K>, V extends Comparable<V>> {
 
     private final static HashMap<ClientArgsNames, String> arguments = new HashMap<>();
 
@@ -58,6 +58,27 @@ public abstract class BasicQuery {
         logger.info("CSV processing finished");
         logger.info("Data load started");
         return HazelcastManager.instanceClient(getArguments(ClientArgsNames.ADDRESSES), data);
+    }
+
+    public static <K extends Comparable<K> ,V extends Comparable<V>> Map<K ,V> sortByValue(Map<K, V> hm) {
+        // Create a list from elements of HashMap
+        List<Map.Entry<K, V>> list = new LinkedList<>(hm.entrySet());
+
+        // Sort the list
+        list.sort(new Comparator<Map.Entry<K, V>>() {
+            public int compare(Map.Entry<K, V> o1, Map.Entry<K, V> o2) {
+                int compareSpecie = o2.getValue().compareTo(o1.getValue());
+                int compareName = o1.getKey().compareTo(o2.getKey());
+                return compareSpecie == 0 ? compareName : compareSpecie;
+            }
+        });
+
+        // put data from sorted list to hashmap
+        HashMap<K, V> temp = new LinkedHashMap<>();
+        for (Map.Entry<K, V> aa : list) {
+            temp.put(aa.getKey(), aa.getValue());
+        }
+        return temp;
     }
 
 }
