@@ -11,7 +11,7 @@ En el directorio server/target/tpe2-g14-server-1.0-SNAPSHOT:
 ./run-server.sh
 ```
 
-### 3. CORRER CLIENTES:
+### 2. CORRER CLIENTES:
 En el directorio client/target/tpe2-g14-client-1.0-SNAPSHOT:
 
 ```
