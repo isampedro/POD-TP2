@@ -9,9 +9,9 @@ import java.util.List;
 
 public class CsvManager {
 
-    private static final int COMUNA = 2;
-    private static final int NOMBRE = 7;
-    private static final int CALLE = 4;
+    private static final int COMUNA_BSAS = 2, COMUNA_VAN = 12;
+    private static final int NOMBRE_BSAS = 7, NOMBRE_VAN = 6;
+    private static final int CALLE_BSAS = 4, CALLE_VAN = 2;
     private static final int BARRIO = 0;
     private static final int POBLACION = 1;
     private static final String SEPARATOR = ";";
@@ -66,11 +66,21 @@ public class CsvManager {
                     title = false;
                 } else {
                     lineArgs = line.split(SEPARATOR);
-                    final String neighborhoodName = lineArgs[COMUNA];
-                    trees.add(new Tree(lineArgs[NOMBRE],
-                            neighborhoods.stream().filter(n -> n.getName().equals(neighborhoodName)).findAny()
-                                    .orElse(new Neighborhood(neighborhoodName, 0)),
-                            lineArgs[CALLE]));
+                    if (city.equals("BUE")) {
+                        final String neighborhoodName = lineArgs[COMUNA_BSAS];
+                        trees.add(
+                                new Tree(lineArgs[NOMBRE_BSAS],
+                                        neighborhoods.stream().filter(n -> n.getName().equals(neighborhoodName))
+                                                .findAny().orElse(new Neighborhood(neighborhoodName, 0)),
+                                        lineArgs[CALLE_BSAS]));
+                    } else {
+                        final String neighborhoodName = lineArgs[COMUNA_VAN];
+                        trees.add(
+                                new Tree(lineArgs[NOMBRE_VAN],
+                                        neighborhoods.stream().filter(n -> n.getName().equals(neighborhoodName))
+                                                .findAny().orElse(new Neighborhood(neighborhoodName, 0)),
+                                        lineArgs[CALLE_VAN]));
+                    }
                 }
             }
 
