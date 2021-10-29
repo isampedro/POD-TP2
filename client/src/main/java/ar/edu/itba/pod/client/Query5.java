@@ -39,25 +39,25 @@ public class Query5 extends BasicQuery {
             System.exit(FAILURE);
         }
 
-        HazelcastInstance client = getHazelcastInstance(logger);
+        final HazelcastInstance client = getHazelcastInstance(logger);
         logger.info("Data load finished");
 
         final JobTracker tracker = client.getJobTracker("query5");
 
         final IList<Tree> trees = client.getList(HazelcastManager.getTreeNamespace());
-        IMap<String, Long> specieTrees = client.getMap("specie_tree_per_street");
+        final IMap<String, Long> specieTrees = client.getMap("specie_tree_per_street");
         logger.info("Data retrieved");
 
         // getting how many trees of the specie there are for each street
-        KeyValueSource<String, Tree> sourceTrees = KeyValueSource.fromList(trees);
-        Job<String, Tree> job = tracker.newJob(sourceTrees);
+        final KeyValueSource<String, Tree> sourceTrees = KeyValueSource.fromList(trees);
+        final Job<String, Tree> job = tracker.newJob(sourceTrees);
         logger.info("MapReduce Started");
-        ICompletableFuture<Map<String, Long>> future = job
+        final ICompletableFuture<Map<String, Long>> future = job
                 .mapper(new Query5Mapper(getArguments(ClientArgsNames.COMMON_NAME),
                         getArguments(ClientArgsNames.NEIGHBOURHOOD)))
                 .combiner(new LongSumCombiner()).reducer(new LongSumReducerFactory()).submit();
 
-        Map<String, Long> rawResult = future.get();
+        final Map<String, Long> rawResult = future.get();
 
         specieTrees.putAll(rawResult);
         final KeyValueSource<String, Long> sourceSpeciesPerStreet = KeyValueSource.fromMap(specieTrees);
@@ -68,8 +68,10 @@ public class Query5 extends BasicQuery {
         logger.info("MapReduce Finished");
         final Map<Integer, ArrayList<String>> finalRawResult = finalFuture.get();
 
-        List<String> outLines = postProcess(finalRawResult);
-        String headers = "GROUP;STREET A; STREET B";
+        logger.info("Sort Started");
+        final List<String> outLines = postProcess(finalRawResult);
+        logger.info("Sort Finished");
+        final String headers = "GROUP;STREET A; STREET B";
         CsvManager.writeToCSV(getArguments(ClientArgsNames.CSV_OUTPATH), outLines, headers);
         trees.clear();
         specieTrees.clear();

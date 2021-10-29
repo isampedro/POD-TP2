@@ -38,7 +38,7 @@ public class Query4 extends BasicQuery {
             System.exit(FAILURE);
         }
 
-        HazelcastInstance client = getHazelcastInstance(logger);
+        final HazelcastInstance client = getHazelcastInstance(logger);
         logger.info("Data load finished");
 
         final JobTracker tracker = client.getJobTracker("query4");
@@ -65,8 +65,10 @@ public class Query4 extends BasicQuery {
                 .combiner(new Query4CombinerFactory()).reducer(new Query4ReducerFactory()).submit();
         logger.info("MapReduce Finished");
         final Map<Integer, ArrayList<String>> finalRawResult = finalFuture.get();
+        logger.info("Sort Started");
         final List<String> outLines = postProcess(finalRawResult);
-        String headers = "GROUP;NEIGHBOURHOOD A;NEIGHBOURHOOD B";
+        logger.info("Sort Finished");
+        final String headers = "GROUP;NEIGHBOURHOOD A;NEIGHBOURHOOD B";
         CsvManager.writeToCSV(getArguments(ClientArgsNames.CSV_OUTPATH), outLines, headers);
         trees.clear();
         differentSpecies.clear();

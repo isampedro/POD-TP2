@@ -35,23 +35,24 @@ public class Query1 extends BasicQuery {
             System.exit(FAILURE);
         }
 
-        HazelcastInstance client = getHazelcastInstance(logger);
+        final HazelcastInstance client = getHazelcastInstance(logger);
         logger.info("Data load finished");
         final JobTracker tracker = client.getJobTracker("query1");
 
-        IList<Tree> trees = client.getList(HazelcastManager.getTreeNamespace());
+        final IList<Tree> trees = client.getList(HazelcastManager.getTreeNamespace());
         logger.info("Data retrieved");
 
-        KeyValueSource<String, Tree> sourceTrees = KeyValueSource.fromList(trees);
-        Job<String, Tree> job = tracker.newJob(sourceTrees);
+        final KeyValueSource<String, Tree> sourceTrees = KeyValueSource.fromList(trees);
+        final Job<String, Tree> job = tracker.newJob(sourceTrees);
         logger.info("MapReduce Started");
-        ICompletableFuture<Map<String, Long>> future = job.mapper(new Query1Mapper())
+        final ICompletableFuture<Map<String, Long>> future = job.mapper(new Query1Mapper())
                 .combiner(new LongSumCombiner()).reducer(new LongSumReducerFactory()).submit();
         logger.info("MapReduce Finished");
-        Map<String, Long> rawResult = future.get();
-        List<String> outLines = postProcess(rawResult);
-
-        String headers = "neighbourhood;trees";
+        final Map<String, Long> rawResult = future.get();
+        logger.info("Sort Started");
+        final List<String> outLines = postProcess(rawResult);
+        logger.info("Sort Finished");
+        final String headers = "neighbourhood;trees";
         CsvManager.writeToCSV(getArguments(ClientArgsNames.CSV_OUTPATH), outLines, headers);
         trees.clear();
         System.exit(SUCCESS);
