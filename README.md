@@ -5,14 +5,7 @@ En el directorio root, ejecutar:
 ./install.sh
 ```
 
-### 1. CORRER REGISTRY:
-Corre en el puerto 1099
-En el directorio server/target/tpe2-g14-server-1.0-SNAPSHOT:
-```
-./run-registry.sh
-```
-
-### 2. CORRER SERVER:
+### 1. CORRER SERVER:
 En el directorio server/target/tpe2-g14-server-1.0-SNAPSHOT:
 ```
 ./run-server.sh
@@ -22,14 +15,20 @@ En el directorio server/target/tpe2-g14-server-1.0-SNAPSHOT:
 En el directorio client/target/tpe2-g14-client-1.0-SNAPSHOT:
 
 ```
-Para correr Cliente de Administración:
-./run-management -DserverAddress=xx.xx.xx.xx:yyyy -Daction=actionName [ -Drunway=runwayName | -Dcategory=minCategory ]
+Para correr query 1 (con ejemplo):
+./run-query1.sh -Dcity=BUE -Daddresses='127.0.0.1:5701' -DinPath=E:/Git/POD-TP2 -DoutPath='E:/Git/POD-TP2
 
-Para correr Cliente de Seguimiento de Vuelo:
-./run-airline -DserverAddress=xx.xx.xx.xx:yyyy -Dairline=airlineName -DflightCode=flightCode
+Para correr query 2 (con ejemplo):
+./run-query2.sh -Dcity=BUE -Daddresses='127.0.0.1:5701' -DinPath=E:/Git/POD-TP2 -DoutPath='E:/Git/POD-TP2
 
-Para correr Cliente de Solicitud de Pista:
-./run-runway -DserverAddress=xx.xx.xx.xx:yyyy -DinPath=fileName
+Para correr query 3 (con ejemplo):
+./run-query3.sh -Dcity=BUE -Daddresses='127.0.0.1:5701' -DinPath=E:/Git/POD-TP2 -DoutPath='E:/Git/POD-TP2 -Dn=3
 
-Para correr Cliente de Consulta:
-./run-query -DserverAddress=xx.xx.xx.xx:yyyy [ -Dairline=airlineName |-Drunway=runwayName ] -DoutPath=fileName```
+Para correr query 4 (con ejemplo):
+./run-query4.sh -Dcity=BUE -Daddresses='127.0.0.1:5701' -DinPath=E:/Git/POD-TP2 -DoutPath='E:/Git/POD-TP2
+
+Para correr query 5 (con ejemplo):
+./run-query5.sh -Dcity=BUE -Daddresses='127.0.0.1:5701' -DinPath=E:/Git/POD-TP2 -DoutPath='E:/Git/POD-TP2 -DcommonName=Alfalfa -Dneighbourhood=1
+```
+
+*ACLARACION: LOS EJEMPLOS NO NECESARIAMENTE CORREN. HAY QUE CORRERLO CON NOMBRES CORRECTOS*
