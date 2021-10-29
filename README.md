@@ -1,4 +1,4 @@
-AirportManager
+TP2 POD
 ## Instrucciones de uso:
 En el directorio root, ejecutar:
 ```
